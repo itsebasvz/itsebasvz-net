@@ -2,21 +2,27 @@
 import SiteHeader from "../components/chrome/SiteHeader.astro";
 import { getDictionary } from "../i18n";
 import type { Locale } from "../i18n";
+import homeCard from "../assets/social/home.png";
 import "../styles/global.css";
 
 interface Props {
   locale: Locale;
   title: string;
   description: string;
+  /** Link preview card. Case routes pass their own. */
+  socialImage?: ImageMetadata;
 }
 
-const { locale, title, description } = Astro.props;
+const { locale, title, description, socialImage = homeCard } = Astro.props;
 const copy = getDictionary(locale);
 const site = Astro.site ?? new URL("https://itsebasvz.net");
 const canonical = new URL(Astro.url.pathname, site);
 const spanishUrl = new URL("/", site);
 const englishUrl = new URL("/en/", site);
 const openGraphLocale = locale === "es" ? "es_MX" : "en_US";
+// Link previews are fetched by servers that never resolve a relative path, so
+// the card has to be absolute even though every other URL here is not.
+const socialUrl = new URL(socialImage.src, site);
 ---
 
 <!doctype html>
@@ -33,8 +39,15 @@ const openGraphLocale = locale === "es" ? "es_MX" : "en_US";
     <link rel="alternate" hreflang="x-default" href={spanishUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={openGraphLocale} />
+    <meta property="og:site_name" content={copy.siteName} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialUrl} />
+    <meta property="og:image:width" content={String(socialImage.width)} />
+    <meta property="og:image:height" content={String(socialImage.height)} />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
   </head>
   <body>
