@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../i18n";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const localize = (value: { es: string; en: string }) => value[locale];
+const { links, copy } = project.data;
+---
+
+{
+  (links.demo || links.organization || links.repository) && (
+    <div class="project-links" data-project-links>
+      {links.demo && copy.links.demo && (
+        <a class="project-link project-link--primary" href={links.demo} target="_blank" rel="noopener noreferrer">
+          {localize(copy.links.demo)} <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      {!links.demo && links.organization && copy.links.organization && (
+        <a class="project-link project-link--primary" href={links.organization} target="_blank" rel="noopener noreferrer">
+          {localize(copy.links.organization)} <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      {links.repository && copy.links.repository && (
+        <a class="project-link project-link--secondary" href={links.repository} target="_blank" rel="noopener noreferrer">
+          {localize(copy.links.repository)} <span aria-hidden="true">↗</span>
+        </a>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .project-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label-lg);
+    text-transform: uppercase;
+    transition:
+      background-color var(--duration-hover) var(--ease-signal),
+      border-color var(--duration-hover) var(--ease-signal),
+      color var(--duration-hover) var(--ease-signal);
+  }
+
+  .project-link--primary {
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  .project-link--primary:hover {
+    background: var(--color-paper);
+  }
+
+  .project-link--secondary {
+    border-color: var(--rule-strong);
+    color: var(--color-paper);
+  }
+
+  .project-link--secondary span {
+    color: var(--color-signal);
+  }
+
+  .project-link--secondary:hover {
+    border-color: var(--color-ash);
+    background: var(--color-panel);
+  }
+</style>

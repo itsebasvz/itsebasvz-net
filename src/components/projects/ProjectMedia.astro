@@ -1,0 +1,155 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import ProductFrame from "../media/ProductFrame.astro";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const localize = (value: { es: string; en: string }) => value[locale];
+const primary = project.data.media.find((entry) => entry.role === "primary");
+const support = project.data.media.find((entry) => entry.role === "support");
+
+if (!primary || !support) {
+  throw new Error(`Project ${project.data.slug} needs primary and support media.`);
+}
+
+const primaryLabel = localize(primary.caption ?? primary.alt);
+const supportLabel = localize(support.caption ?? support.alt);
+const isWorldCup = project.data.slug === "world-cup-cdmx-guide";
+const pairCaptions: Record<string, { es: string; en: string }> = {
+  duet: {
+    es: "Estado → actividad → resultado",
+    en: "State → activity → result"
+  },
+  "hello-world": {
+    es: "Superficie pública + sistema en uso",
+    en: "Public surface + system in use"
+  },
+  hackods: {
+    es: "Método → territorio",
+    en: "Method → territory"
+  }
+};
+const pairCaptionSource = pairCaptions[project.data.slug];
+const pairCaption = pairCaptionSource ? localize(pairCaptionSource) : undefined;
+const supportAccent = project.data.slug === "duet" ? "signal" : "electric";
+const desktopSizes = "(min-width: 980px) 46vw, (min-width: 720px) 50vw, calc(100vw - 40px)";
+---
+
+{
+  isWorldCup ? (
+    <div class="project-media project-media--world" data-project-media>
+      <div class="project-media__world-pair">
+        <div class="project-media__world-desktop" data-project-primary>
+          <ProductFrame
+            src={media[primary.asset]}
+            alt={localize(primary.alt)}
+            chromeLabel={primaryLabel}
+            sizes="(min-width: 980px) 34vw, (min-width: 720px) 37vw, calc(100vw - 40px)"
+          />
+        </div>
+        <div class="project-media__world-phone" data-project-support>
+          <ProductFrame
+            src={media[support.asset]}
+            alt={localize(support.alt)}
+            sizes="196px"
+            phone={true}
+          />
+          <p>{supportLabel}</p>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="project-media" data-project-media>
+      <div class="project-media__primary" data-project-primary>
+        <ProductFrame
+          src={media[primary.asset]}
+          alt={localize(primary.alt)}
+          chromeLabel={primaryLabel}
+          sizes={desktopSizes}
+        />
+      </div>
+      <div class="project-media__support" data-project-support>
+        <ProductFrame
+          src={media[support.asset]}
+          alt={localize(support.alt)}
+          chromeLabel={supportLabel}
+          accent={supportAccent}
+          sizes="(min-width: 980px) 420px, (min-width: 720px) 40vw, calc(100vw - 56px)"
+        />
+      </div>
+      {pairCaption && <p class="project-media__caption">{pairCaption}</p>}
+    </div>
+  )
+}
+
+<style>
+  .project-media {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+
+  .project-media__primary {
+    min-width: 0;
+  }
+
+  .project-media__support {
+    position: relative;
+    z-index: 1;
+    width: min(86%, 540px);
+    margin-top: clamp(-30px, -2.4vw, -14px);
+    margin-left: clamp(-52px, -3.6vw, -16px);
+    box-shadow: 0 0 0 7px var(--color-void);
+  }
+
+  .project-media__caption,
+  .project-media__world-phone p {
+    margin: 0;
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .project-media--world {
+    display: block;
+  }
+
+  .project-media__world-pair {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+
+  .project-media__world-desktop {
+    min-width: min(100%, 240px);
+    flex: 1 1 240px;
+  }
+
+  .project-media__world-phone {
+    width: clamp(142px, 19vw, 196px);
+    flex: 0 0 auto;
+  }
+
+  .project-media__world-phone p {
+    margin-top: 10px;
+    color: var(--color-graphite);
+  }
+
+  @media (max-width: 540px) {
+    .project-media__world-phone {
+      width: min(38vw, 172px);
+    }
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../i18n";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const localize = (value: { es: string; en: string }) => value[locale];
+---
+
+<dl class="project-facts" data-project-facts>
+  {
+    project.data.facts.map((fact) => (
+      <div class="project-facts__item">
+        <dt>{localize(fact.label)}</dt>
+        <dd class:list={{ "project-facts__value--highlight": fact.highlight }}>
+          {localize(fact.value)}
+        </dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .project-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1px;
+    margin: 0;
+    border: 1px solid var(--rule-subtle);
+    background: var(--rule-subtle);
+  }
+
+  .project-facts__item {
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--color-void);
+  }
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  dt {
+    margin-bottom: 4px;
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  dd {
+    color: var(--color-paper);
+    font-size: 0.9375rem;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .project-facts__value--highlight {
+    color: var(--color-signal);
+  }
+</style>
