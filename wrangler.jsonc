@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/wrangler.json",
+  "name": "signals-to-systems",
+  "compatibility_date": "2026-07-27",
+  "assets": {
+    "directory": "./dist",
+    // Every route is prerendered, so there is no Worker script and no Astro
+    // adapter — this serves the static build directly.
+    "html_handling": "auto-trailing-slash",
+    // Stays "none" until src/pages/404.astro exists. Pointing this at a
+    // 404-page that was never built would serve Cloudflare's default while
+    // claiming otherwise.
+    "not_found_handling": "none"
+  }
+}
