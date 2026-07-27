@@ -54,14 +54,16 @@ const projects = defineCollection({
       demo: z.url().optional(),
       organization: z.url().optional()
     }),
-    media: z.array(
-      z.object({
-        asset: z.enum(mediaAssetIds),
-        role: z.enum(["primary", "support", "case"]),
-        alt: localizedText,
-        caption: localizedText.optional()
-      })
-    ).min(1),
+    media: z
+      .array(
+        z.object({
+          asset: z.enum(mediaAssetIds),
+          role: z.enum(["primary", "support", "case"]),
+          alt: localizedText,
+          caption: localizedText.optional()
+        })
+      )
+      .min(1),
     copy: projectCopy
   })
 });

@@ -94,8 +94,7 @@ export const es = {
         footerLeft: "Sistema · Geometría resuelta",
         footerRight: "Retícula · Rotación 0°"
       },
-      body:
-        "Lo orgánico queda en la fotografía. La interfaz aporta el orden: mismos módulos, misma retícula, sin rotaciones ni bordes rotos que imiten un sticker."
+      body: "Lo orgánico queda en la fotografía. La interfaz aporta el orden: mismos módulos, misma retícula, sin rotaciones ni bordes rotos que imiten un sticker."
     },
     work: {
       sceneLabel: "Trabajo seleccionado",
@@ -165,8 +164,7 @@ export const es = {
     contact: {
       sceneLabel: "Contacto · Firma",
       heading: "Construyamos algo que importe.",
-      body:
-        "Si tienes un problema interesante, una comunidad que hacer crecer o un sistema que todavía no existe, hablemos.",
+      body: "Si tienes un problema interesante, una comunidad que hacer crecer o un sistema que todavía no existe, hablemos.",
       photoAlt:
         "Sebastián Vázquez en cuclillas junto a un arroyo en el bosque, mirando hacia el agua.",
       photoCaption: "19 · Sebastián Vázquez",
@@ -193,8 +191,7 @@ export const es = {
       typography: "Tipografía",
       stack: "Stack",
       infrastructure: "Infraestructura",
-      note:
-        "Los stickers, las texturas y la tipografía pegada de CDMX son el vocabulario visual del sitio, no su decoración.",
+      note: "Los stickers, las texturas y la tipografía pegada de CDMX son el vocabulario visual del sitio, no su decoración.",
       backToTop: "Volver arriba"
     }
   }

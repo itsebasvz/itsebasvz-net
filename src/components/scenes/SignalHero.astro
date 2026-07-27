@@ -19,9 +19,11 @@ const copy = getDictionary(locale).home.hero;
 <section id="entrada" class="signal-hero" data-scene="01">
   <LiquidField />
   <div class="content-frame">
-    {/* Wrapped so the ball can measure its ceiling: a component's root element
+    {
+      /* Wrapped so the ball can measure its ceiling: a component's root element
         cannot be given an attribute from its parent. The div is layout-neutral
-        — the header's bottom margin collapses straight through it. */}
+        — the header's bottom margin collapses straight through it. */
+    }
     <div data-arena-top>
       <SceneHeader number={1} label={copy.sceneLabel} />
     </div>
@@ -181,7 +183,6 @@ const copy = getDictionary(locale).home.hero;
       display: block;
     }
   }
-
 
   .signal-hero__period {
     color: var(--color-signal);

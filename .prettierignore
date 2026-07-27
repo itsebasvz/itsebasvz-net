@@ -1,0 +1,21 @@
+dist
+node_modules
+.astro
+playwright-report
+test-results
+
+# Editorial prose, wrapped by hand for readability
+README.md
+AGENTS.md
+CLAUDE.md
+docs
+
+# Design handoff: a generated export, not source to reformat
+design_handoff_portfolio
+*.dc.html
+support.js
+
+.vscode
+package-lock.json
+src/assets
+public/models

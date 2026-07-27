@@ -410,11 +410,7 @@ export function createLiquid(
 
   const quad = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-    gl.STATIC_DRAW
-  );
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
@@ -432,25 +428,9 @@ export function createLiquid(
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      internalFormat,
-      size,
-      size,
-      0,
-      format,
-      gl.HALF_FLOAT,
-      null
-    );
+    gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, size, size, 0, format, gl.HALF_FLOAT, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    gl.framebufferTexture2D(
-      gl.FRAMEBUFFER,
-      gl.COLOR_ATTACHMENT0,
-      gl.TEXTURE_2D,
-      texture,
-      0
-    );
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
       gl.deleteFramebuffer(fbo);
       gl.deleteTexture(texture);
@@ -490,12 +470,7 @@ export function createLiquid(
   const maybeDye = createDoubleTarget(config.dyeResolution, gl.RGBA16F, gl.RGBA, filtering);
   const maybeDivergenceTarget = createTarget(config.simResolution, gl.R16F, gl.RED, gl.NEAREST);
   const maybeCurlTarget = createTarget(config.simResolution, gl.R16F, gl.RED, gl.NEAREST);
-  const maybePressureTarget = createDoubleTarget(
-    config.simResolution,
-    gl.R16F,
-    gl.RED,
-    gl.NEAREST
-  );
+  const maybePressureTarget = createDoubleTarget(config.simResolution, gl.R16F, gl.RED, gl.NEAREST);
 
   if (
     !maybeVelocity ||
@@ -636,19 +611,13 @@ export function createLiquid(
     gl.uniform1i(advect.u("uVelocity"), bindTexture(velocity.read.texture, 0));
     gl.uniform1i(advect.u("uSource"), bindTexture(velocity.read.texture, 0));
     gl.uniform1f(advect.u("uDt"), DT);
-    gl.uniform1f(
-      advect.u("uDissipation"),
-      Math.pow(config.velocityDissipation, delta * 60)
-    );
+    gl.uniform1f(advect.u("uDissipation"), Math.pow(config.velocityDissipation, delta * 60));
     blit(velocity.write);
     velocity.swap();
 
     gl.uniform1i(advect.u("uVelocity"), bindTexture(velocity.read.texture, 0));
     gl.uniform1i(advect.u("uSource"), bindTexture(dye.read.texture, 1));
-    gl.uniform1f(
-      advect.u("uDissipation"),
-      Math.pow(config.densityDissipation, delta * 60)
-    );
+    gl.uniform1f(advect.u("uDissipation"), Math.pow(config.densityDissipation, delta * 60));
     blit(dye.write);
     dye.swap();
   }

@@ -46,7 +46,10 @@ const evidenceMedia = {
 
           return (
             <div
-              class:list={["evidence-strip__item", { "evidence-strip__item--wide": item.id === "hackods" }]}
+              class:list={[
+                "evidence-strip__item",
+                { "evidence-strip__item--wide": item.id === "hackods" }
+              ]}
               data-evidence-item
             >
               <EvidenceFigure

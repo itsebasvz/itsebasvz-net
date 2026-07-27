@@ -142,7 +142,10 @@ export function createTennisBall(options: TennisBallOptions = {}): THREE.Object3
     across.crossVectors(point, tangent).normalize();
 
     for (const offset of RIBBON) {
-      vertex.copy(point).addScaledVector(across, offset * spread).normalize();
+      vertex
+        .copy(point)
+        .addScaledVector(across, offset * spread)
+        .normalize();
       normals.push(vertex.x, vertex.y, vertex.z);
       positions.push(vertex.x * lift, vertex.y * lift, vertex.z * lift);
       // Squared so the dark core holds its width and only the last sliver ramps

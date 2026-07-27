@@ -16,17 +16,32 @@ const { links, copy } = project.data;
   (links.demo || links.organization || links.repository) && (
     <div class="project-links" data-project-links>
       {links.demo && copy.links.demo && (
-        <a class="project-link project-link--primary" href={links.demo} target="_blank" rel="noopener noreferrer">
+        <a
+          class="project-link project-link--primary"
+          href={links.demo}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {localize(copy.links.demo)} <span aria-hidden="true">↗</span>
         </a>
       )}
       {!links.demo && links.organization && copy.links.organization && (
-        <a class="project-link project-link--primary" href={links.organization} target="_blank" rel="noopener noreferrer">
+        <a
+          class="project-link project-link--primary"
+          href={links.organization}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {localize(copy.links.organization)} <span aria-hidden="true">↗</span>
         </a>
       )}
       {links.repository && copy.links.repository && (
-        <a class="project-link project-link--secondary" href={links.repository} target="_blank" rel="noopener noreferrer">
+        <a
+          class="project-link project-link--secondary"
+          href={links.repository}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {localize(copy.links.repository)} <span aria-hidden="true">↗</span>
         </a>
       )}

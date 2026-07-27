@@ -1,10 +1,7 @@
 import { getCollection } from "astro:content";
 
 export async function getPublicProjects() {
-  const projects = await getCollection(
-    "projects",
-    ({ data }) => data.publishState === "ready"
-  );
+  const projects = await getCollection("projects", ({ data }) => data.publishState === "ready");
 
   return projects.toSorted((left, right) => left.data.order - right.data.order);
 }

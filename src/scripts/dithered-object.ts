@@ -880,8 +880,7 @@ export function createDitheredObject(
     const pr = Math.min(window.devicePixelRatio || 1, 2);
     renderer.setPixelRatio(pr);
     renderer.setSize(width, height, false);
-    const pixelSize =
-      Math.max(config.gridSize, 1) * Math.max(config.pixelSizeRatio, 1) * pr;
+    const pixelSize = Math.max(config.gridSize, 1) * Math.max(config.pixelSizeRatio, 1) * pr;
     const targetScale = Math.min(1, 2 / pixelSize);
     target.setSize(
       Math.max(Math.round(width * pr * targetScale), 1),
@@ -1082,8 +1081,7 @@ export function createDitheredObject(
         .set((point.x / width) * 2 - 1, 1 - (point.y / height) * 2, -1)
         .unproject(camera);
       camera.getWorldDirection(scratchDirection);
-      const travel =
-        Math.abs(scratchDirection.z) > 1e-6 ? -near.z / scratchDirection.z : 0;
+      const travel = Math.abs(scratchDirection.z) > 1e-6 ? -near.z / scratchDirection.z : 0;
       return {
         x: near.x + scratchDirection.x * travel,
         y: near.y + scratchDirection.y * travel

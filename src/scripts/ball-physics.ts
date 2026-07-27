@@ -115,12 +115,7 @@ const DEFAULTS = {
 };
 
 /** One fixed substep. Pure in `state`, so it can be run over a copy. */
-function substep(
-  state: BallState,
-  bounds: BallBounds,
-  config: Settings,
-  step: BallStep
-) {
+function substep(state: BallState, bounds: BallBounds, config: Settings, step: BallStep) {
   state.vy -= config.gravity * STEP;
 
   const drag = Math.exp(-config.airDrag * STEP);

@@ -7,8 +7,7 @@ export const en = {
   skipToContent: "Skip to content",
   languageSwitch: "Change language",
   homeTitle: "Sebastián Vázquez — Full-stack developer",
-  homeDescription:
-    "Computer Engineering student at UNAM. I build systems, tools, and community.",
+  homeDescription: "Computer Engineering student at UNAM. I build systems, tools, and community.",
   home: {
     navigation: {
       label: "Primary navigation",
@@ -20,8 +19,7 @@ export const en = {
       verticalLabel: "Signals to systems",
       eyebrow: "Sebastián Vázquez · Full-stack developer · Mexico City",
       headline: ["From signals", "to systems."],
-      proposition:
-        "Computer Engineering student at UNAM. I build systems, tools, and community.",
+      proposition: "Computer Engineering student at UNAM. I build systems, tools, and community.",
       workAction: "Explore the work",
       contactAction: "Get in touch",
       photoAlt:
@@ -94,8 +92,7 @@ export const en = {
         footerLeft: "System · Resolved geometry",
         footerRight: "Grid · 0° rotation"
       },
-      body:
-        "The organic stays in the photograph. The interface brings order: the same modules, the same grid, without rotations or broken borders that imitate a sticker."
+      body: "The organic stays in the photograph. The interface brings order: the same modules, the same grid, without rotations or broken borders that imitate a sticker."
     },
     work: {
       sceneLabel: "Selected work",
@@ -165,8 +162,7 @@ export const en = {
     contact: {
       sceneLabel: "Contact · Signature",
       heading: "Let’s build something that matters.",
-      body:
-        "If you have an interesting problem, a community ready to grow, or a system that does not exist yet, let’s talk.",
+      body: "If you have an interesting problem, a community ready to grow, or a system that does not exist yet, let’s talk.",
       photoAlt:
         "Sebastián Vázquez crouching beside a stream in the forest and looking toward the water.",
       photoCaption: "19 · Sebastián Vázquez",
@@ -193,8 +189,7 @@ export const en = {
       typography: "Typography",
       stack: "Stack",
       infrastructure: "Infrastructure",
-      note:
-        "The stickers, textures, and pasted typography of Mexico City are the site's visual vocabulary, not its decoration.",
+      note: "The stickers, textures, and pasted typography of Mexico City are the site's visual vocabulary, not its decoration.",
       backToTop: "Back to top"
     }
   }

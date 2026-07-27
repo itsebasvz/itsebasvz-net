@@ -93,8 +93,7 @@ const copy = getDictionary(locale).home.hero.ball;
     let idleAngle = 0;
     let bounds: BallBounds = { minX: -1, maxX: 1, minY: -1, maxY: 1 };
 
-    const clamp = (value: number, min: number, max: number) =>
-      Math.min(Math.max(value, min), max);
+    const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
     const whenIdle = (run: () => void) => {
       if (typeof window.requestIdleCallback === "function") {
@@ -179,10 +178,7 @@ const copy = getDictionary(locale).home.hero.ball;
       if (dropped || !physics || !instance) return;
       dropped = true;
       measure();
-      physics.place(
-        bounds.minX + (bounds.maxX - bounds.minX) * DROP_PERCENT,
-        bounds.maxY
-      );
+      physics.place(bounds.minX + (bounds.maxX - bounds.minX) * DROP_PERCENT, bounds.maxY);
       handle!.hidden = false;
       mount!.dataset.state = "ready";
     }
@@ -256,8 +252,7 @@ const copy = getDictionary(locale).home.hero.ball;
           applyPose(root, { x: physics.x, y: physics.y, angle: physics.angle + idleAngle });
 
           const screen = instance.toCanvas({ x: physics.x, y: physics.y });
-          handle!.style.transform =
-            `translate3d(${screen.x}px, ${screen.y}px, 0) translate(-50%, -50%)`;
+          handle!.style.transform = `translate3d(${screen.x}px, ${screen.y}px, 0) translate(-50%, -50%)`;
 
           if (step.landed) report("bounce");
           if (step.settled) report("settled");

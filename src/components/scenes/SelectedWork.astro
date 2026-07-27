@@ -41,17 +41,17 @@ const localize = (value: { es: string; en: string }) => value[locale];
               <div class="project__inner">
                 <div class="project__copy" data-project-copy>
                   <div class="project__heading-row">
-                    <span class="project__number">{String(project.data.order).padStart(2, "0")}</span>
+                    <span class="project__number">
+                      {String(project.data.order).padStart(2, "0")}
+                    </span>
                     <h3 id={`project-${project.data.slug}`} class="type-headline-lg">
                       {localize(projectCopy.name)}
                     </h3>
-                    {
-                      badge && (
-                        <span class:list={["project__badge", { "project__badge--award": isAward }]}>
-                          {badge}
-                        </span>
-                      )
-                    }
+                    {badge && (
+                      <span class:list={["project__badge", { "project__badge--award": isAward }]}>
+                        {badge}
+                      </span>
+                    )}
                   </div>
                   <p class="project__metadata">{localize(projectCopy.metadata)}</p>
                   <p class="project__thesis">{localize(projectCopy.thesis)}</p>
@@ -59,7 +59,11 @@ const localize = (value: { es: string; en: string }) => value[locale];
                   <ProjectFacts project={project} locale={locale} />
                   <ProjectLinks project={project} locale={locale} />
                 </div>
-                <div class="project__media" data-project-media-column aria-labelledby={`project-${project.data.slug}`}>
+                <div
+                  class="project__media"
+                  data-project-media-column
+                  aria-labelledby={`project-${project.data.slug}`}
+                >
                   <ProjectMedia project={project} locale={locale} />
                 </div>
               </div>
