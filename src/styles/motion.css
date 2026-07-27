@@ -1,0 +1,28 @@
+/*
+ * Scroll snapping is declared on the root because that is the scroller, but it
+ * only ever engages where a descendant sets `scroll-snap-align` — today just
+ * the steps of scene 02. `proximity` is what makes that safe: with no snap
+ * target nearby the scroller behaves normally, so anchors, the skip link and
+ * every other scene are untouched.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

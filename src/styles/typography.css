@@ -1,0 +1,66 @@
+@import "@fontsource-variable/instrument-sans/wdth.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+html {
+  font-family: var(--font-sans);
+  font-synthesis: none;
+}
+
+body {
+  font-size: var(--font-size-body);
+  line-height: var(--line-body);
+}
+
+.type-display-xl,
+.type-display-lg,
+.type-headline-lg {
+  text-wrap: balance;
+}
+
+.type-display-xl {
+  font-size: var(--font-size-display-xl);
+  font-stretch: 92%;
+  font-weight: 650;
+  letter-spacing: var(--tracking-display-xl);
+  line-height: var(--line-display-xl);
+}
+
+.type-display-lg {
+  font-size: var(--font-size-display-lg);
+  font-stretch: 94%;
+  font-weight: 620;
+  letter-spacing: var(--tracking-display-lg);
+  line-height: var(--line-display-lg);
+}
+
+.type-headline-lg {
+  font-size: var(--font-size-headline-lg);
+  font-weight: 600;
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--line-headline);
+}
+
+.type-body-lg {
+  font-size: var(--font-size-body-lg);
+  letter-spacing: var(--tracking-body-lg);
+  line-height: var(--line-body-lg);
+}
+
+.type-label-lg,
+.type-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.type-label-lg {
+  font-size: var(--font-size-label-lg);
+  letter-spacing: var(--tracking-label-lg);
+  line-height: 1.25;
+}
+
+.type-label {
+  font-size: var(--font-size-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.25;
+}
