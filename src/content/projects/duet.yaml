@@ -1,0 +1,81 @@
+slug: duet
+order: 4
+publishState: ready
+featured: true
+status: alpha
+fields:
+  - ai-tooling
+  - open-source
+technologies:
+  - TypeScript
+  - Python
+facts:
+  - label:
+      es: Licencia
+      en: License
+    value:
+      es: AGPL-3.0
+      en: AGPL-3.0
+  - label:
+      es: Rol
+      en: Role
+    value:
+      es: Autor
+      en: Author
+  - label:
+      es: Estado
+      en: Status
+    value:
+      es: En desarrollo
+      en: In development
+links: {}
+media:
+  - asset: duet-worker-running
+    role: primary
+    alt:
+      es: Interfaz de Duet con un brief delegado a un worker en estado de ejecución y actividad del agente en curso.
+      en: Duet interface showing a brief delegated to a worker while execution and agent activity are in progress.
+    caption:
+      es: duet · worker ejecutando
+      en: duet · worker running
+  - asset: duet-worker-done
+    role: support
+    alt:
+      es: Interfaz de Duet mostrando el resultado devuelto por un worker al terminar la ejecución.
+      en: Duet interface showing the result returned by a worker once execution is complete.
+    caption:
+      es: Ejecución terminada
+      en: Execution complete
+copy:
+  name:
+    es: Duet
+    en: Duet
+  metadata:
+    es: Tooling de IA · Open source · Alpha
+    en: AI tooling · Open source · Alpha
+  thesis:
+    es: Razonamiento de alto valor para decidir. Workers intercambiables para ejecutar.
+    en: High-value reasoning for decisions. Interchangeable workers for execution.
+  summary:
+    es: Un orquestador de agentes que separa planeación, ejecución y revisión para usar cada modelo donde aporta más.
+    en: An agent orchestrator that separates planning, execution, and review so each model is used where it contributes most.
+  case:
+    headline:
+      es: Pensar y ejecutar no tienen por qué costar lo mismo.
+      en: Thinking and executing do not have to cost the same.
+    context:
+      es: Los modelos más capaces son valiosos cuando una tarea exige criterio, planeación y revisión. Usarlos también para cada operación repetitiva encarece el flujo y oculta qué trabajo podría delegarse.
+      en: The most capable models are valuable when a task requires judgment, planning, and review. Using them for every repetitive operation makes the workflow more expensive and obscures the work that could be delegated.
+    system:
+      es: Duet separa esas responsabilidades. Un orquestador prepara briefs autocontenidos, delega la ejecución a workers compatibles y recupera actividad, resultados y diffs para revisión. La interfaz hace visible el intercambio en vez de esconderlo detrás de una sola conversación.
+      en: Duet separates those responsibilities. An orchestrator prepares self-contained briefs, delegates execution to compatible workers, and retrieves activity, results, and diffs for review. The interface exposes the exchange instead of hiding it behind a single conversation.
+    contribution:
+      es: "Diseñé la premisa, la arquitectura de orquestación y la experiencia del producto: frontend web, servidor, persistencia, adaptadores de proveedor y un contrato de drivers extensible. El primer driver conecta el sistema con Hermes."
+      en: "I designed the premise, orchestration architecture, and product experience: web frontend, server, persistence, provider adapters, and an extensible driver contract. The first driver connects the system to Hermes."
+    outcome:
+      es: Duet sigue siendo un producto muy alpha. Ya se usa en trabajo real —incluida la construcción conceptual de este portafolio—, pero todavía requiere mayor robustez entre proveedores, autenticación y endurecimiento antes de presentarse como una herramienta terminada.
+      en: Duet remains a very early alpha. It is already used for real work —including the conceptual development of this portfolio— but still needs stronger provider reliability, authentication, and hardening before it can be presented as a finished tool.
+  links:
+    repository:
+      es: Ver repositorio
+      en: View source

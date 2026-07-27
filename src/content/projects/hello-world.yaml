@@ -1,0 +1,91 @@
+slug: hello-world
+order: 2
+publishState: ready
+featured: true
+status: active
+fields:
+  - community
+  - product
+technologies:
+  - Astro
+  - Supabase
+facts:
+  - label:
+      es: Rol
+      en: Role
+    value:
+      es: Cofundador
+      en: Co-founder
+  - label:
+      es: Base
+      en: Base
+    value:
+      es: FES Aragón
+      en: FES Aragón
+  - label:
+      es: Alcance
+      en: Scope
+    value:
+      es: Sitio + portal + admin
+      en: Site + portal + admin
+links:
+  demo: https://helloworld-unam.tech/
+  organization: https://helloworld-unam.tech/
+media:
+  - asset: hello-world-public
+    role: primary
+    alt:
+      es: Portada pública de Hello World con titular, presentación del club y foto de la comunidad.
+      en: Hello World’s public homepage with its headline, club introduction, and a community photo.
+    caption:
+      es: helloworld-unam.tech · superficie pública
+      en: helloworld-unam.tech · public surface
+  - asset: hello-world-member
+    role: support
+    alt:
+      es: Portal de miembros de Hello World con datos sanitizados, evidencias, puntos y periodo activo.
+      en: Hello World member portal with sanitized data, submissions, points, and an active period.
+    caption:
+      es: Portal de miembros · datos sanitizados
+      en: Member portal · sanitized data
+  - asset: hello-world-admin
+    role: case
+    alt:
+      es: Panel administrativo sanitizado de Hello World.
+      en: Sanitized Hello World administrative panel.
+copy:
+  name:
+    es: Hello World
+    en: Hello World
+  metadata:
+    es: Comunidad · Producto · Activo
+    en: Community · Product · Active
+  thesis:
+    es: Una comunidad necesita más que una landing. Necesita infraestructura para crecer.
+    en: A community needs more than a landing page. It needs infrastructure to grow.
+  summary:
+    es: El sitio público, el portal de miembros y la operación de la mesa directiva viven en un mismo sistema.
+    en: The public site, member portal, and board operations live in one system.
+  case:
+    headline:
+      es: Del espacio para el talento al sistema que lo sostiene.
+      en: From a space for talent to the system that sustains it.
+    context:
+      es: En la FES Aragón hay personas capaces que no siempre encuentran dónde mostrar lo que saben, aprender con otras disciplinas o construir algo en equipo. Hello World nació para crear ese espacio para quienes ya están y para las generaciones que siguen.
+      en: At FES Aragón, capable people do not always find a place to show what they know, learn across disciplines, or build with a team. Hello World was created to make that space for current members and the generations that follow.
+    system:
+      es: "Lo que comenzó como identidad pública evolucionó hacia la infraestructura operativa del club: sitio, portal de miembros y panel administrativo. El sistema gestiona evidencias, puntos, solicitudes, entrevistas, periodos y miembros con roles y reglas de acceso."
+      en: "What began as a public identity evolved into the club’s operating infrastructure: website, member portal, and admin panel. The system manages submissions, points, applications, interviews, periods, and members through role-based access and explicit rules."
+    contribution:
+      es: Cofundé Hello World y he dirigido su evolución técnica. Orquesté la migración a Astro SSR, la integración con Supabase y servicios transaccionales, y el desarrollo del portal de miembros y las herramientas administrativas. Es un producto construido junto con una comunidad, no una obra individual.
+      en: I co-founded Hello World and have led its technical evolution. I orchestrated the migration to Astro SSR, integration with Supabase and transactional services, and development of the member portal and administrative tools. It is a product built with a community, not an individual work.
+    outcome:
+      es: La misma plataforma presenta al club y sostiene procesos que cambian cada semestre. La superficie pública comunica la misión; el sistema privado permite que la mesa directiva opere y deje trazabilidad sin depender de procesos dispersos.
+      en: The same platform presents the club and supports processes that change every semester. Its public surface communicates the mission; the private system lets the board operate with traceability instead of relying on scattered workflows.
+  links:
+    demo:
+      es: Visitar sitio
+      en: Visit live site
+    repository:
+      es: Ver código
+      en: View source

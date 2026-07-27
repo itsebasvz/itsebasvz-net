@@ -1,0 +1,95 @@
+slug: hackods
+order: 1
+publishState: ready
+featured: true
+year: 2026
+fields:
+  - data-engineering
+  - open-data
+technologies:
+  - Python
+  - Quarto
+  - uv
+badge:
+  es: 1er lugar
+  en: 1st place
+facts:
+  - label:
+      es: Fuentes
+      en: Sources
+    value:
+      es: INEGI · CONAGUA · CONEVAL · SHCP · SIODS
+      en: INEGI · CONAGUA · CONEVAL · SHCP · SIODS
+  - label:
+      es: Rol
+      en: Role
+    value:
+      es: Arquitectura · equipo linuxitOS
+      en: Architecture · team linuxitOS
+  - label:
+      es: Resultado
+      en: Outcome
+    value:
+      es: 1er lugar · 2026
+      en: 1st place · 2026
+    highlight: true
+links:
+  demo: https://hackods.github.io/HackODS2026_linuxitOS/
+media:
+  - asset: hackods-indicators
+    role: primary
+    alt:
+      es: Dashboard de HackODS con la tesis del proyecto e indicadores nacionales de cobertura, municipios rurales y desigualdad hídrica.
+      en: HackODS dashboard showing the project thesis and national indicators for coverage, rural municipalities, and water inequality.
+    caption:
+      es: Dashboard · indicadores nacionales
+      en: Dashboard · national indicators
+  - asset: hackods-map-ranking
+    role: support
+    alt:
+      es: Mapa de cobertura de agua por municipio junto al ranking de municipios con mayor rezago.
+      en: Municipal water-coverage map alongside a ranking of municipalities with the greatest deprivation.
+    caption:
+      es: Territorio · mapa y rezago
+      en: Territory · map and deprivation
+  - asset: hackods-scatter
+    role: case
+    alt:
+      es: Visualización de dispersión municipal del dashboard de HackODS.
+      en: Municipal scatter visualization from the HackODS dashboard.
+copy:
+  name:
+    es: HackODS
+    en: HackODS
+  metadata:
+    es: Data engineering · HackODS UNAM 2026
+    en: Data engineering · HackODS UNAM 2026
+  thesis:
+    es: Datos públicos dispersos convertidos en una lectura municipal de la desigualdad hídrica.
+    en: Scattered public data turned into a municipal view of water inequality.
+  summary:
+    es: Cinco fuentes gubernamentales, un pipeline reproducible y un dashboard para explorar la relación entre infraestructura de agua y pobreza.
+    en: Five government sources, one reproducible pipeline, and a dashboard exploring the relationship between water infrastructure and poverty.
+  case:
+    headline:
+      es: Cinco fuentes públicas. Una pregunta que ninguna respondía por separado.
+      en: Five public sources. One question none could answer alone.
+    context:
+      es: Los datos necesarios para estudiar la relación entre infraestructura hídrica y pobreza municipal existen, pero están repartidos entre instituciones, formatos y niveles de granularidad distintos. Consultarlos por separado oculta los patrones que aparecen al cruzarlos.
+      en: The data required to study the relationship between water infrastructure and municipal poverty exists, but it is distributed across institutions, formats, and different levels of granularity. Looking at each source separately hides the patterns that emerge when they are connected.
+    system:
+      es: Construimos un pipeline ETL en Python para extraer, limpiar y armonizar datos de INEGI, CONAGUA, CONEVAL, SHCP y SIODS. Un dashboard interactivo en Quarto permite recorrer los resultados por municipio y explorar relaciones sin presentar una correlación como causalidad.
+      en: We built a Python ETL pipeline to extract, clean, and harmonize data from INEGI, CONAGUA, CONEVAL, SHCP, and SIODS. An interactive Quarto dashboard lets people explore the results by municipality without presenting correlation as causation.
+    contribution:
+      es: Lideré la arquitectura de la solución junto con el equipo linuxitOS y estructuré el entorno reproducible con uv. Mi trabajo conectó las fuentes, el procesamiento y la capa de visualización en un flujo que podía ejecutarse y verificarse como una unidad.
+      en: I led the solution architecture with team linuxitOS and structured the reproducible environment with uv. My work connected sources, processing, and visualization into a flow that could be executed and verified as one system.
+    outcome:
+      es: La propuesta obtuvo el primer lugar en HackODS UNAM 2026. El premio valida la capacidad del equipo para transformar datos abiertos fragmentados en una herramienta legible y técnicamente reproducible.
+      en: The project earned first place at HackODS UNAM 2026. The award recognizes the team’s ability to turn fragmented open data into a readable, technically reproducible tool.
+  links:
+    demo:
+      es: Abrir dashboard
+      en: Open dashboard
+    repository:
+      es: Ver código
+      en: View source

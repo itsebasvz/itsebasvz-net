@@ -1,0 +1,82 @@
+slug: world-cup-cdmx-guide
+order: 3
+publishState: ready
+featured: true
+year: 2026
+fields:
+  - product-engineering
+  - mobile-first
+technologies:
+  - Astro
+  - TypeScript
+facts:
+  - label:
+      es: Contexto
+      en: Context
+    value:
+      es: HBS internship
+      en: HBS internship
+  - label:
+      es: Rol
+      en: Role
+    value:
+      es: Diseño y desarrollo
+      en: Design and development
+  - label:
+      es: Salida
+      en: Outcome
+    value:
+      es: Demo pública
+      en: Public demo
+links:
+  demo: https://worldcup-cdmx-guide.vercel.app/
+media:
+  - asset: world-cup-desktop
+    role: primary
+    alt:
+      es: Portada de la guía de CDMX con un titular grande, subtítulo, botón principal y el asistente Zayu en la esquina.
+      en: Mexico City guide homepage with a large headline, subtitle, primary action, and the Zayu assistant in the corner.
+    caption:
+      es: worldcup-cdmx-guide · es
+      en: worldcup-cdmx-guide · es
+  - asset: world-cup-mobile
+    role: support
+    alt:
+      es: La guía de CDMX en teléfono, con navegación por idioma y contenido priorizado para pantalla vertical.
+      en: The Mexico City guide on a phone, with locale navigation and content prioritized for a vertical screen.
+    caption:
+      es: Mobile-first
+      en: Mobile-first
+copy:
+  name:
+    es: World Cup CDMX Guide
+    en: World Cup CDMX Guide
+  metadata:
+    es: Product engineering · HBS · 2026
+    en: Product engineering · HBS · 2026
+  thesis:
+    es: CDMX convertida en una guía accionable para un crew internacional con poco tiempo.
+    en: Mexico City shaped into an actionable guide for an international crew with limited time.
+  summary:
+    es: Una experiencia mobile-first y multilingüe que reúne cultura, comida, rutas, seguridad y asistencia contextual en un solo lugar.
+    en: A mobile-first, multilingual experience bringing culture, food, routes, safety, and contextual assistance into one place.
+  case:
+    headline:
+      es: Diseñar para el tiempo que existe, no para el itinerario ideal.
+      en: Designing for the time people have, not the perfect itinerary.
+    context:
+      es: El crew internacional que trabaja en un evento de esta escala conoce la ciudad entre jornadas exigentes. La información turística habitual es abundante, pero no está priorizada para ventanas cortas, contexto local y decisiones rápidas.
+      en: International crew working at an event of this scale experience the city between demanding shifts. Conventional travel information is abundant, but it is not prioritized for short windows, local context, and quick decisions.
+    system:
+      es: La guía organiza CDMX por zonas y reúne recomendaciones culturales, gastronómicas y prácticas en una experiencia mobile-first. La navegación por idioma, los enlaces de mapa y Zayu —un asistente contextual con respuestas en streaming— reducen la distancia entre quiero salir y sé qué hacer.
+      en: The guide organizes Mexico City by area and brings cultural, food, and practical recommendations into a mobile-first experience. Locale-based navigation, map links, and Zayu —a contextual assistant with streaming responses— shorten the distance between I want to go out and I know what to do.
+    contribution:
+      es: "Durante mi internship con HBS, diseñé y desarrollé el producto de extremo a extremo: estructura de información, interfaz responsiva, internacionalización, integración del asistente y despliegue. La solución se pensó para uso real desde un teléfono, no como una guía turística genérica."
+      en: "During my HBS internship, I designed and developed the product end to end: information architecture, responsive interface, internationalization, assistant integration, and deployment. It was built for real use on a phone, not as a generic travel guide."
+    outcome:
+      es: El proyecto tiene una demo pública y un repositorio privado. En el portafolio se muestran la experiencia, las decisiones de producto y la arquitectura sin publicar alojamientos, teléfonos, rutas internas ni contenido operativo confidencial.
+      en: The project has a public demo and a private repository. The portfolio can show the experience, product decisions, and architecture without exposing accommodation details, phone numbers, internal routes, or confidential operational content.
+  links:
+    demo:
+      es: Abrir demo
+      en: Visit live site
