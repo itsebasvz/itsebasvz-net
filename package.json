@@ -11,7 +11,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "check": "astro check",
+    "content:check": "node scripts/validate-content.mjs",
+    "typecheck": "astro check",
+    "check": "npm run content:check && npm run typecheck",
     "build": "astro build",
     "preview": "astro preview"
   },
