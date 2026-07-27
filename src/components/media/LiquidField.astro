@@ -1,0 +1,103 @@
+---
+/**
+ * A pointer-driven fluid trail, drawn behind the scene it is dropped into.
+ * The parent must be `position: relative`; this fills it edge to edge and
+ * listens for pointer movement on the parent, since the canvas itself never
+ * takes pointer events.
+ */
+---
+
+<div class="liquid-field" data-liquid aria-hidden="true">
+  <canvas class="liquid-field__canvas" data-liquid-canvas></canvas>
+</div>
+
+<script>
+  import type { LiquidInstance } from "../../scripts/liquid";
+
+  const mount = document.querySelector<HTMLElement>("[data-liquid]");
+  const canvas = mount?.querySelector<HTMLCanvasElement>("[data-liquid-canvas]");
+  const target = mount?.parentElement;
+
+  if (mount && canvas && target) {
+    // A fluid stirred by the cursor has nothing to react to without one, so
+    // touch-only devices never pay for the context.
+    const pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = Boolean(
+      (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+    );
+
+    let instance: LiquidInstance | null = null;
+    let booting = false;
+
+    const whenIdle = (run: () => void) => {
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(run, { timeout: 2000 });
+        return;
+      }
+      window.setTimeout(run, 400);
+    };
+
+    async function boot() {
+      if (instance || booting || saveData || reducedMotion.matches || !pointer.matches) return;
+      booting = true;
+      const { createLiquid } = await import("../../scripts/liquid");
+      instance = createLiquid(
+        { output: canvas!, pointerTarget: target! },
+        {
+          // Canvas UI's demo values. The fluid reads as liquid because of the
+          // curl and the trail's persistence; pulling those down turned it into
+          // drifting gas, so they stay as shipped. Only the colour changes.
+          force: 1.1,
+          radius: 0.3,
+          curl: 1.9,
+          pressure: 0.8,
+          pressureIterations: 4,
+          intensity: 2,
+          opacity: 1,
+          // Fades out entirely by three quarters down, leaving the band where
+          // the fox stands clear of the field.
+          fadeEnd: 0.75,
+          densityDissipation: 0.96,
+          velocityDissipation: 1,
+          simResolution: 128,
+          dyeResolution: 512,
+          // --color-signal, #ff761a.
+          color: [1, 0.4627, 0.102],
+          rainbow: false
+        }
+      );
+      if (instance) mount!.dataset.state = "ready";
+      booting = false;
+    }
+
+    const start = () => whenIdle(() => void boot());
+
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+
+    pointer.addEventListener("change", () => void boot());
+  }
+</script>
+
+<style>
+  .liquid-field {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .liquid-field__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-signal);
+  }
+
+  .liquid-field[data-state="ready"] .liquid-field__canvas {
+    opacity: 1;
+  }
+</style>
