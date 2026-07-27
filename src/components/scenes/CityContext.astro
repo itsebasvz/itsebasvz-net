@@ -1,0 +1,143 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import MediaPlate from "../media/MediaPlate.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.city;
+---
+
+<section id="ciudad" class="city-context" data-scene="05">
+  <div class="content-frame">
+    <SceneHeader number={5} label={copy.sceneLabel} />
+    <div class="city-context__grid">
+      <div class="city-context__photo" data-city-photo>
+        <MediaPlate
+          src={media["cdmx-blue-hour-16"]}
+          alt={copy.photo.alt}
+          caption={copy.photo.caption}
+          detail={copy.photo.detail}
+          sizes="(min-width: 1100px) 400px, (min-width: 720px) 36vw, calc(100vw - 40px)"
+          widths={[320, 480, 640, 880, 1280, 1440]}
+        />
+      </div>
+
+      <div class="city-context__content" data-city-content>
+        <h2 class="type-headline-lg">{copy.heading}</h2>
+        <p class="city-context__body type-body-lg">{copy.body}</p>
+        <dl class="city-context__details">
+          {
+            copy.details.map((detail) => (
+              <div>
+                <dt>{detail.label}</dt>
+                <dd>{detail.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .city-context {
+    padding-block: var(--scene-space);
+    background: linear-gradient(180deg, var(--color-void) 0%, var(--color-night) 14%);
+  }
+
+  .city-context__grid {
+    display: grid;
+    grid-template-columns: minmax(250px, 400px) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(32px, 4vw, 72px);
+  }
+
+  .city-context__photo {
+    min-width: 0;
+    max-width: 400px;
+  }
+
+  .city-context__content {
+    min-width: 0;
+  }
+
+  .city-context__content h2 {
+    max-width: 18ch;
+    margin-bottom: var(--space-5);
+  }
+
+  .city-context__body {
+    max-width: 40ch;
+    margin-bottom: clamp(32px, 4vw, 48px);
+    color: var(--color-ash);
+  }
+
+  .city-context__details {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .city-context__details > div {
+    display: flex;
+    min-height: 60px;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--rule-subtle);
+  }
+
+  .city-context__details > div:last-child {
+    border-bottom: 1px solid var(--rule-subtle);
+  }
+
+  .city-context__details dt,
+  .city-context__details dd {
+    margin: 0;
+  }
+
+  .city-context__details dt {
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .city-context__details dd {
+    max-width: 42ch;
+    color: var(--color-paper);
+    font-size: 1rem;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    text-align: right;
+  }
+
+  @media (max-width: 680px) {
+    .city-context__grid {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .city-context__details > div {
+      min-height: 0;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .city-context__details dd {
+      text-align: left;
+    }
+  }
+</style>

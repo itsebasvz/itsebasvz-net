@@ -1,0 +1,110 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import EvidenceFigure from "../media/EvidenceFigure.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.evidence;
+const evidenceMedia = {
+  hackods: {
+    src: media["hackods-evidence"],
+    widths: [320, 480, 640, 960, 1280],
+    sizes: "(min-width: 1000px) 30vw, (min-width: 640px) 48vw, calc(100vw - 40px)"
+  },
+  austria: {
+    src: media["obb-evidence"],
+    widths: [320, 480, 640, 960, 1280, 1440],
+    sizes: "(min-width: 1000px) 18vw, (min-width: 640px) 44vw, calc(100vw - 40px)"
+  },
+  hbs: {
+    src: media["hbs-evidence"],
+    widths: [320, 480, 640, 960, 1280, 1440],
+    sizes: "(min-width: 1000px) 18vw, (min-width: 640px) 44vw, calc(100vw - 40px)"
+  },
+  stadium: {
+    src: media["hello-world-evidence"],
+    widths: [320, 480, 640, 960, 1280, 1440],
+    sizes: "(min-width: 1000px) 18vw, (min-width: 640px) 44vw, calc(100vw - 40px)"
+  }
+};
+---
+
+<section id="evidencia" class="evidence-strip" data-scene="06">
+  <div class="content-frame">
+    <SceneHeader number={6} label={copy.sceneLabel} />
+    <h2 class="type-headline-lg evidence-strip__heading">{copy.heading}</h2>
+    <div class="evidence-strip__items" data-evidence>
+      {
+        copy.items.map((item) => {
+          const source = evidenceMedia[item.id];
+
+          return (
+            <div
+              class:list={["evidence-strip__item", { "evidence-strip__item--wide": item.id === "hackods" }]}
+              data-evidence-item
+            >
+              <EvidenceFigure
+                src={source.src}
+                alt={item.alt}
+                caption={item.caption}
+                detail={item.detail}
+                pending={item.pending}
+                widths={source.widths}
+                sizes={source.sizes}
+              />
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .evidence-strip {
+    padding-block: var(--scene-space);
+    background: linear-gradient(180deg, var(--color-night) 0%, var(--color-pine) 16%);
+  }
+
+  .evidence-strip__heading {
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+
+  .evidence-strip__items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: clamp(16px, 2vw, 28px);
+  }
+
+  .evidence-strip__item {
+    min-width: 0;
+    flex: 3 1 0;
+  }
+
+  .evidence-strip__item--wide {
+    flex: 5.33 1 0;
+  }
+
+  @media (max-width: 760px) {
+    .evidence-strip__items {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .evidence-strip__item,
+    .evidence-strip__item--wide {
+      min-width: 0;
+    }
+
+    .evidence-strip__item--wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

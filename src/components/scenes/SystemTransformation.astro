@@ -1,0 +1,307 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import MediaPlate from "../media/MediaPlate.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.transformation;
+---
+
+<section id="interfaz" class="system-transformation" data-scene="03">
+  <div class="content-frame">
+    <SceneHeader number={3} label={copy.sceneLabel} />
+    <h2 class="type-display-lg system-transformation__heading">{copy.heading}</h2>
+
+    <div class="system-transformation__grid" data-transformation>
+      <div class="system-transformation__photo" data-transformation-photo>
+        <MediaPlate
+          src={media["signal-wall-09"]}
+          alt={copy.photo.alt}
+          caption={copy.photo.caption}
+          detail={copy.photo.detail}
+          sizes="(min-width: 1100px) 460px, (min-width: 720px) 41vw, calc(100vw - 40px)"
+          widths={[320, 480, 640, 880, 1280, 1440]}
+        />
+      </div>
+
+      <div class="system-transformation__system" data-transformation-panel>
+        <div class="system-transformation__modules">
+          <div class="interface-module">
+            <span class="interface-module__label">{copy.panel.tagLabel}</span>
+            <div class="interface-module__tags" aria-label={copy.panel.tagLabel}>
+              <span>Astro</span>
+              <span>TypeScript</span>
+              <span>Python</span>
+            </div>
+          </div>
+
+          <div class="interface-module">
+            <span class="interface-module__label">{copy.panel.actionLabel}</span>
+            <div class="interface-module__actions" aria-label={copy.panel.actionLabel}>
+              <span class="interface-action interface-action--primary">{copy.panel.primaryAction}</span>
+              <span class="interface-action interface-action--secondary">{copy.panel.secondaryAction}</span>
+            </div>
+          </div>
+
+          <div class="interface-module">
+            <span class="interface-module__label">{copy.panel.factLabel}</span>
+            <dl class="interface-module__facts">
+              <div>
+                <dt>{copy.panel.sourceLabel}</dt>
+                <dd>{copy.panel.sourceValue}</dd>
+              </div>
+              <div>
+                <dt>{copy.panel.outcomeLabel}</dt>
+                <dd>{copy.panel.outcomeValue}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="interface-module">
+            <span class="interface-module__label">{copy.panel.indexLabel}</span>
+            <div class="interface-module__index" aria-label={copy.panel.indexLabel}>
+              <span>04</span>
+              <span></span>
+              <span>/ 08</span>
+            </div>
+          </div>
+        </div>
+        <p class="system-transformation__panel-caption">
+          <span>{copy.panel.footerLeft}</span>
+          <span>{copy.panel.footerRight}</span>
+        </p>
+      </div>
+    </div>
+
+    <p class="system-transformation__body">{copy.body}</p>
+  </div>
+</section>
+
+<style>
+  .system-transformation {
+    padding-block: var(--scene-space);
+    background: linear-gradient(180deg, var(--color-sticker) 0%, var(--color-carmine) 16%);
+  }
+
+  .system-transformation__heading {
+    max-width: 22ch;
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+
+  .system-transformation__grid {
+    display: grid;
+    grid-template-columns: minmax(250px, 460px) minmax(0, 1fr);
+    align-items: stretch;
+    gap: clamp(24px, 3vw, 48px);
+  }
+
+  .system-transformation__photo,
+  .system-transformation__system {
+    min-width: 0;
+  }
+
+  .system-transformation__photo {
+    max-width: 460px;
+  }
+
+  .system-transformation__system {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .system-transformation__modules {
+    display: grid;
+    min-height: 100%;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--rule-subtle);
+    background: var(--rule-subtle);
+  }
+
+  .interface-module {
+    display: flex;
+    min-height: 174px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: clamp(18px, 2vw, 26px);
+    background: var(--color-sticker);
+  }
+
+  .interface-module__label,
+  .interface-module__facts dt,
+  .system-transformation__panel-caption,
+  .interface-module__index {
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .interface-module__tags,
+  .interface-module__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .interface-module__tags span {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid rgb(113 116 122 / 34%);
+    border-radius: var(--radius-xs);
+    background: var(--color-panel);
+    color: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .interface-action {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    padding-inline: 18px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label-lg);
+    text-transform: uppercase;
+  }
+
+  .interface-action--primary {
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  .interface-action--secondary {
+    border-color: var(--rule-strong);
+    color: var(--color-paper);
+  }
+
+  .interface-module__facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .interface-module__facts > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .interface-module__facts > div:first-child {
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--rule-subtle);
+  }
+
+  .interface-module__facts dt,
+  .interface-module__facts dd {
+    margin: 0;
+  }
+
+  .interface-module__facts dd {
+    color: var(--color-paper);
+    font-size: 0.9375rem;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    text-align: right;
+  }
+
+  .interface-module__facts > div:last-child dd {
+    color: var(--color-signal);
+  }
+
+  .interface-module__index {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .interface-module__index span:first-child {
+    color: var(--color-signal);
+  }
+
+  .interface-module__index span:nth-child(2) {
+    height: 1px;
+    flex: 1;
+    background: var(--rule-strong);
+  }
+
+  .interface-module__index span:last-child {
+    color: var(--color-graphite);
+  }
+
+  .system-transformation__panel-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .system-transformation__panel-caption span:last-child {
+    text-align: right;
+  }
+
+  .system-transformation__body {
+    max-width: 66ch;
+    margin-top: clamp(32px, 4vw, 56px);
+    color: var(--color-ash);
+  }
+
+  @media (max-width: 820px) {
+    .system-transformation__grid {
+      grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
+    }
+
+    .system-transformation__modules {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .system-transformation__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .system-transformation__photo {
+      max-width: 460px;
+    }
+
+    .system-transformation__modules {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 440px) {
+    .system-transformation__modules {
+      grid-template-columns: 1fr;
+    }
+
+    .system-transformation__panel-caption {
+      flex-direction: column;
+    }
+
+    .system-transformation__panel-caption span:last-child {
+      text-align: left;
+    }
+  }
+</style>

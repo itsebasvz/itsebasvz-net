@@ -1,0 +1,70 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import MediaPlate from "../media/MediaPlate.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.exit;
+---
+
+<section id="salida" class="exit-city" data-scene="07">
+  <div class="content-frame">
+    <SceneHeader number={7} label={copy.sceneLabel} />
+    <div class="exit-city__grid">
+      <div class="exit-city__photo" data-exit-media>
+        <MediaPlate
+          src={media["road-signal-20"]}
+          alt={copy.photo.alt}
+          caption={copy.photo.caption}
+          detail={copy.photo.detail}
+          sizes="(min-width: 1100px) 420px, (min-width: 720px) 38vw, calc(100vw - 40px)"
+          widths={[320, 480, 640, 880, 1280, 1440]}
+        />
+      </div>
+      <div class="exit-city__content">
+        <h2 class="type-headline-lg">{copy.heading}</h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .exit-city {
+    padding-block: var(--scene-space);
+    background: linear-gradient(180deg, var(--color-pine) 0%, var(--color-forest) 18%);
+  }
+
+  .exit-city__grid {
+    display: grid;
+    grid-template-columns: minmax(250px, 420px) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 4vw, 72px);
+  }
+
+  .exit-city__photo {
+    min-width: 0;
+    max-width: 420px;
+  }
+
+  .exit-city__content {
+    min-width: 0;
+  }
+
+  .exit-city__content h2 {
+    max-width: 20ch;
+    font-size: clamp(1.875rem, 3.8vw, 3.5rem);
+  }
+
+  @media (max-width: 680px) {
+    .exit-city__grid {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "../components/chrome/SiteFooter.astro";
+import ContactSignature from "../components/scenes/ContactSignature.astro";
+import CityContext from "../components/scenes/CityContext.astro";
+import EvidenceStrip from "../components/scenes/EvidenceStrip.astro";
+import ExitCity from "../components/scenes/ExitCity.astro";
+import SignalHero from "../components/scenes/SignalHero.astro";
+import SignalField from "../components/scenes/SignalField.astro";
+import SelectedWork from "../components/scenes/SelectedWork.astro";
+import SystemTransformation from "../components/scenes/SystemTransformation.astro";
+import { getDictionary } from "../i18n";
+
+const copy = getDictionary("es");
+---
+
+<BaseLayout locale="es" title={copy.homeTitle} description={copy.homeDescription}>
+  <SignalHero locale="es" />
+  <SignalField locale="es" />
+  <SystemTransformation locale="es" />
+  <SelectedWork locale="es" />
+  <CityContext locale="es" />
+  <EvidenceStrip locale="es" />
+  <ExitCity locale="es" />
+  <ContactSignature locale="es" />
+  <SiteFooter locale="es" />
+</BaseLayout>

@@ -1,0 +1,264 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import DitheredFox from "../media/DitheredFox.astro";
+import HeroBall from "../media/HeroBall.astro";
+import LiquidField from "../media/LiquidField.astro";
+import MediaPlate from "../media/MediaPlate.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.hero;
+---
+
+<section id="entrada" class="signal-hero" data-scene="01">
+  <LiquidField />
+  <div class="content-frame">
+    {/* Wrapped so the ball can measure its ceiling: a component's root element
+        cannot be given an attribute from its parent. The div is layout-neutral
+        — the header's bottom margin collapses straight through it. */}
+    <div data-arena-top>
+      <SceneHeader number={1} label={copy.sceneLabel} />
+    </div>
+    <div class="signal-hero__grid">
+      <div class="signal-hero__copy-group">
+        <div class="signal-hero__rail" data-arena-left aria-hidden="true">
+          <span></span>
+          <span>{copy.verticalLabel}</span>
+        </div>
+        <div class="signal-hero__copy">
+          <p class="signal-hero__eyebrow">{copy.eyebrow}</p>
+          <h1 class="type-display-xl">
+            {copy.headline[0]}<br />
+            {copy.headline[1].slice(0, -1)}<span class="signal-hero__period">.</span>
+          </h1>
+          <p class="signal-hero__proposition type-body-lg">{copy.proposition}</p>
+          <div class="signal-hero__actions">
+            <a class="action action--primary" href="#trabajo" data-fox-home>{copy.workAction}</a>
+            <a class="action action--secondary" href="#contacto">{copy.contactAction}</a>
+          </div>
+          <div class="signal-hero__fox" data-arena-floor>
+            <DitheredFox />
+          </div>
+        </div>
+      </div>
+      <div class="signal-hero__media" data-arena-right>
+        <MediaPlate
+          src={media["signal-wall-05"]}
+          alt={copy.photoAlt}
+          sizes="(min-width: 1100px) 440px, (min-width: 720px) 35vw, calc(100vw - 40px)"
+          widths={[320, 440, 640, 880, 1280, 1440]}
+          loading="eager"
+          fetchpriority="high"
+          caption={copy.photoCaption}
+          detail={copy.photoLocation}
+        />
+      </div>
+    </div>
+    <HeroBall locale={locale} />
+  </div>
+</section>
+
+<style>
+  /* `isolation` keeps the fluid layer's stacking to this scene, so it can never
+     paint over the header or the scene that follows. */
+  .signal-hero {
+    position: relative;
+    padding-block: clamp(56px, 9vh, 112px) clamp(80px, 11vh, 144px);
+    background: var(--color-void);
+    isolation: isolate;
+  }
+
+  /* Lifts the copy above the fluid: an absolutely positioned sibling would
+     otherwise paint on top of static content. */
+  .content-frame {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Stretched, not bottom-aligned: the copy rides at the top of the column and
+     the fox takes the floor of it. */
+  /* Both gaps are named because the fox's canvas has to reach back across them
+     to cover the arena: its walls are the rail and the photograph, not the text
+     column the fox box happens to live in. */
+  .signal-hero__grid {
+    --hero-gap: clamp(40px, 5vw, 80px);
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 440px);
+    align-items: stretch;
+    gap: var(--hero-gap);
+  }
+
+  .signal-hero__copy-group {
+    --rail-gap: clamp(16px, 2.2vw, 28px);
+
+    display: flex;
+    min-width: 0;
+    gap: var(--rail-gap);
+  }
+
+  .signal-hero__rail {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding-top: var(--space-2);
+  }
+
+  .signal-hero__rail span:first-child {
+    width: 1px;
+    height: clamp(40px, 7vw, 72px);
+    background: var(--color-signal);
+  }
+
+  .signal-hero__rail span:last-child {
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  .signal-hero__copy {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  .signal-hero__eyebrow {
+    margin-bottom: clamp(20px, 2.6vw, 30px);
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label-lg);
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 10ch;
+    margin-bottom: clamp(22px, 2.8vw, 34px);
+  }
+
+  /* Sits on the floor of the text column, aligned with the copy's left edge.
+     `margin-top: auto` is what pushes the copy up and hands the fox whatever
+     height the photograph leaves over; the min-height stops it from being
+     squeezed into a sliver on short rows. The box, not the component, owns the
+     size — the canvas fills it absolutely. */
+  .signal-hero__fox {
+    position: relative;
+    display: none;
+    /* `auto`, not `100%`. The parent is a stretch flex column, so an auto width
+       resolves to the container minus this element's margins — and since those
+       margins are negative, that is what actually widens the box. With an
+       explicit width the margins only shift it, which drags the right edge
+       further in and slices the fox instead of giving it room.
+       Scene units map to the box height, so none of this resizes the fox. */
+    width: auto;
+    min-height: clamp(220px, 24vh, 310px);
+    /* Bleeds out to the rail on one side and the photograph on the other, so
+       the canvas covers the whole arena. Without this the fox chases the ball
+       past its own boundary and gets sliced by it — the canvas is transparent
+       and takes no pointer events, so reaching under its neighbours costs
+       nothing. */
+    margin-inline: calc(-1 * var(--rail-gap)) calc(-1 * var(--hero-gap));
+    margin-top: clamp(24px, 3vw, 48px);
+    flex: 1 1 auto;
+  }
+
+  @media (min-width: 1000px) {
+    .signal-hero__fox {
+      display: block;
+    }
+  }
+
+
+  .signal-hero__period {
+    color: var(--color-signal);
+  }
+
+  .signal-hero__proposition {
+    max-width: 34ch;
+    margin-bottom: clamp(30px, 3.6vw, 42px);
+    color: var(--color-paper);
+  }
+
+  .signal-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .action {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 22px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label-lg);
+    text-transform: uppercase;
+    transition:
+      background-color var(--duration-hover) var(--ease-signal),
+      border-color var(--duration-hover) var(--ease-signal),
+      color var(--duration-hover) var(--ease-signal);
+  }
+
+  .action--primary {
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  .action--primary:hover {
+    background: var(--color-paper);
+  }
+
+  .action--secondary {
+    border-color: var(--rule-strong);
+    color: var(--color-paper);
+  }
+
+  .action--secondary:hover {
+    border-color: var(--color-ash);
+    background: var(--color-panel);
+  }
+
+  /* Now that the row is stretched, the photograph keeps its own height and
+     stays pinned to the top of the row. */
+  .signal-hero__media {
+    width: min(100%, 440px);
+    align-self: start;
+    justify-self: end;
+  }
+
+  @media (max-width: 860px) {
+    .signal-hero__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 360px);
+      gap: var(--space-10);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .signal-hero__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .signal-hero__media {
+      justify-self: start;
+    }
+  }
+</style>

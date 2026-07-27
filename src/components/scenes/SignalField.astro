@@ -1,0 +1,278 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import MediaPlate from "../media/MediaPlate.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.signalField;
+const total = String(copy.modules.length).padStart(2, "0");
+---
+
+<section id="senales" class="signal-field" data-scene="02">
+  <div class="content-frame">
+    <SceneHeader number={2} label={copy.sceneLabel} />
+
+    <div class="signal-field__sequence" data-signal-sequence>
+      <div class="signal-field__aside">
+        <p class="signal-field__counter" aria-hidden="true" data-signal-aside>
+          <span class="signal-field__counter-value"
+            ><span>0</span><span class="signal-field__digit" data-signal-digit>1</span></span
+          >
+          <span class="signal-field__counter-total">/ {total}</span>
+        </p>
+        <h2 class="signal-field__claim" data-signal-aside>{copy.thesis}</h2>
+      </div>
+
+      <ol class="signal-field__steps">
+        {
+          copy.modules.map((module, index) => (
+            <li class="signal-step" data-signal-step>
+              <span class="signal-step__number">{String(index + 1).padStart(2, "0")}</span>
+              <h3 class="signal-step__title">{module.title}</h3>
+              <span class="signal-step__translation">{module.translation}</span>
+              <p class="signal-step__description">{module.description}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="signal-field__evidence">
+      <div class="signal-field__photo" data-signal-plate>
+        <MediaPlate
+          src={media["signal-texture-14-crop"]}
+          alt={copy.firstPhoto.alt}
+          caption={copy.firstPhoto.caption}
+          sizes="(min-width: 1100px) 480px, (min-width: 720px) 42vw, calc(100vw - 40px)"
+          widths={[320, 480, 640, 880, 1037]}
+        />
+      </div>
+      <div class="signal-field__photo" data-signal-plate>
+        <MediaPlate
+          src={media["signal-wall-08-crop"]}
+          alt={copy.secondPhoto.alt}
+          caption={copy.secondPhoto.caption}
+          sizes="(min-width: 1100px) 480px, (min-width: 720px) 42vw, calc(100vw - 40px)"
+          widths={[320, 480, 640, 880, 936]}
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import type { SignalFieldTargets } from "../../scripts/motion/signal-field";
+
+  const sequence = document.querySelector<HTMLElement>("[data-signal-sequence]");
+  const scene = sequence?.closest<HTMLElement>("[data-scene='02']");
+  const digit = sequence?.querySelector<HTMLElement>("[data-signal-digit]");
+
+  if (sequence && scene && digit) {
+    const targets: SignalFieldTargets = {
+      sequence,
+      digit,
+      aside: [...sequence.querySelectorAll<HTMLElement>("[data-signal-aside]")],
+      steps: [...sequence.querySelectorAll<HTMLElement>("[data-signal-step]")],
+      plates: [...scene.querySelectorAll<HTMLElement>("[data-signal-plate]")]
+    };
+
+    // GSAP is the heaviest thing on the page after the fox, and this scene sits
+    // one screen down. Loading it as the sequence approaches keeps it off the
+    // hero's critical path without ever showing an unanimated first step.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        void import("../../scripts/motion/signal-field").then(({ createSignalField }) => {
+          createSignalField(targets);
+        });
+      },
+      { rootMargin: "400px 0px" }
+    );
+    observer.observe(sequence);
+  }
+</script>
+
+<style>
+  .signal-field {
+    padding-block: var(--scene-space);
+    background: linear-gradient(180deg, var(--color-void) 0%, var(--color-sticker) 14%);
+  }
+
+  /* The aside is a grid item, so its sticky range is the full height of the
+     steps column beside it. */
+  .signal-field__sequence {
+    /* One slab of scroll per step. The aside borrows the same measure, which is
+       what keeps the two columns on a shared centre line. */
+    --step-block: 42svh;
+
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: clamp(32px, 6vw, 96px);
+  }
+
+  /*
+   * Sized like a step and stuck at the offset that centres a step, so the
+   * counter and the active title share a baseline from the first frame.
+   *
+   * A viewport-tall box was the obvious version and it is wrong: its content
+   * centres half a viewport below the start of the sequence, while step one
+   * centres a fifth of one below it. The gap is the difference, and it does not
+   * close until the aside finally sticks — long after step one has gone past.
+   * Matching the measures makes the unstuck and stuck positions the same point,
+   * so the handover is invisible.
+   */
+  .signal-field__aside {
+    position: sticky;
+    top: calc(50svh - var(--step-block) / 2);
+    display: flex;
+    /* Without this the grid stretches the aside over the whole row, and a
+       sticky box as tall as its containing block has no travel left to stick
+       with — it just scrolls. */
+    align-self: start;
+    min-height: var(--step-block);
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(20px, 3vh, 36px);
+  }
+
+  .signal-field__counter {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin: 0;
+    color: var(--color-signal);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-display-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-display-lg);
+    line-height: 1;
+  }
+
+  /* Tabular figures reserve their own width, so the tick never nudges layout. */
+  .signal-field__counter-value {
+    display: inline-flex;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Inline boxes ignore transforms, and the digit slides as it swaps. */
+  .signal-field__digit {
+    display: inline-block;
+  }
+
+  .signal-field__counter-total {
+    color: var(--color-graphite);
+    font-size: var(--font-size-label-lg);
+    letter-spacing: var(--tracking-label-lg);
+  }
+
+  .signal-field__claim {
+    max-width: 16ch;
+    font-size: var(--font-size-headline-lg);
+    letter-spacing: var(--tracking-headline);
+    line-height: var(--line-headline);
+  }
+
+  .signal-field__steps {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  /* Each step owns a slab of scroll and centres its own content, so the
+     element's midpoint, the snap point and the trigger's `center center` all
+     describe the same line. */
+  .signal-step {
+    display: flex;
+    min-height: var(--step-block);
+    flex-direction: column;
+    justify-content: center;
+    scroll-snap-align: center;
+  }
+
+  .signal-step__number {
+    color: var(--color-signal);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .signal-step__title {
+    margin-block: var(--space-3) var(--space-2);
+    font-size: var(--font-size-display-lg);
+    font-weight: 600;
+    letter-spacing: var(--tracking-display-lg);
+    line-height: var(--line-display-lg);
+  }
+
+  .signal-step__translation {
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .signal-step__description {
+    max-width: 34ch;
+    margin-top: var(--space-5);
+    color: var(--color-ash);
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-body);
+  }
+
+  /* Two plates on a three-column measure: the empty third column is the air
+     the scene needs after two viewports of type. */
+  .signal-field__evidence {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: clamp(24px, 3.4vw, 56px);
+    margin-top: clamp(80px, 12vh, 152px);
+  }
+
+  @media (max-width: 900px) {
+    .signal-field__sequence {
+      grid-template-columns: 1fr;
+      gap: clamp(24px, 5vw, 48px);
+    }
+
+    /* Below the two-column layout the aside stops being a companion and becomes
+       a header, so it gives up both stickiness and its reserved measure. */
+    .signal-field__aside {
+      position: static;
+      min-height: 0;
+    }
+
+    .signal-field__sequence {
+      --step-block: 34svh;
+    }
+
+    .signal-field__evidence {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signal-field__aside {
+      position: static;
+      min-height: 0;
+    }
+
+    /* Without dimming there is no reason to spend two viewports on five items;
+       the list collapses to ordinary reading length. */
+    .signal-step {
+      min-height: 0;
+      padding-block: clamp(20px, 4vh, 44px);
+      scroll-snap-align: none;
+    }
+  }
+</style>

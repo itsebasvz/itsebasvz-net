@@ -1,0 +1,230 @@
+---
+import type { Locale } from "../../i18n";
+import { getDictionary } from "../../i18n";
+import { getFeaturedProjects } from "../../data/projects";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import ProjectFacts from "../projects/ProjectFacts.astro";
+import ProjectLinks from "../projects/ProjectLinks.astro";
+import ProjectMedia from "../projects/ProjectMedia.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.work;
+const projects = await getFeaturedProjects();
+const localize = (value: { es: string; en: string }) => value[locale];
+---
+
+<section id="trabajo" class="selected-work" data-scene="04">
+  <div class="content-frame">
+    <SceneHeader number={4} label={copy.sceneLabel} />
+    <header class="selected-work__intro">
+      <h2 class="type-display-lg">{copy.heading}</h2>
+      <p>{copy.summary}</p>
+    </header>
+
+    <div class="selected-work__projects">
+      {
+        projects.map((project, index) => {
+          const projectCopy = project.data.copy;
+          const status = project.data.status && copy.status[project.data.status];
+          const badge = project.data.badge ? localize(project.data.badge) : status;
+          const isAward = Boolean(project.data.badge);
+
+          return (
+            <article
+              class:list={["project", { "project--reversed": index % 2 === 1 }]}
+              data-project={project.data.slug}
+            >
+              <div class="project__inner">
+                <div class="project__copy" data-project-copy>
+                  <div class="project__heading-row">
+                    <span class="project__number">{String(project.data.order).padStart(2, "0")}</span>
+                    <h3 id={`project-${project.data.slug}`} class="type-headline-lg">
+                      {localize(projectCopy.name)}
+                    </h3>
+                    {
+                      badge && (
+                        <span class:list={["project__badge", { "project__badge--award": isAward }]}>
+                          {badge}
+                        </span>
+                      )
+                    }
+                  </div>
+                  <p class="project__metadata">{localize(projectCopy.metadata)}</p>
+                  <p class="project__thesis">{localize(projectCopy.thesis)}</p>
+                  <p class="project__summary">{localize(projectCopy.summary)}</p>
+                  <ProjectFacts project={project} locale={locale} />
+                  <ProjectLinks project={project} locale={locale} />
+                </div>
+                <div class="project__media" data-project-media-column aria-labelledby={`project-${project.data.slug}`}>
+                  <ProjectMedia project={project} locale={locale} />
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .selected-work {
+    padding-block: var(--scene-space);
+    background: linear-gradient(180deg, var(--color-carmine) 0%, var(--color-void) 12%);
+  }
+
+  .selected-work__intro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-6);
+    margin-bottom: clamp(56px, 7vw, 96px);
+  }
+
+  .selected-work__intro h2 {
+    max-width: 20ch;
+  }
+
+  .selected-work__intro p {
+    max-width: 32ch;
+    color: var(--color-ash);
+    line-height: var(--line-body);
+  }
+
+  .project {
+    margin: 0;
+  }
+
+  .project + .project {
+    padding-top: clamp(56px, 7vw, 96px);
+  }
+
+  .project:not(:last-child) {
+    padding-bottom: clamp(56px, 7vw, 96px);
+    border-bottom: 1px solid var(--rule-subtle);
+  }
+
+  .project__inner {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.92fr) minmax(0, 1.08fr);
+    align-items: start;
+    gap: clamp(28px, 3.4vw, 56px);
+  }
+
+  .project__copy,
+  .project__media {
+    min-width: 0;
+  }
+
+  .project--reversed .project__copy {
+    order: 2;
+  }
+
+  .project--reversed .project__media {
+    order: 1;
+  }
+
+  .project__heading-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .project__number {
+    color: var(--color-signal);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label-lg);
+  }
+
+  .project__heading-row h3 {
+    max-width: 100%;
+  }
+
+  .project__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-pill);
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  .project__badge--award {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  .project__metadata {
+    margin-bottom: clamp(20px, 2.4vw, 28px);
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .project__thesis {
+    max-width: 30ch;
+    margin-bottom: var(--space-4);
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    line-height: 1.4;
+  }
+
+  .project__summary {
+    max-width: 44ch;
+    margin-bottom: clamp(24px, 3vw, 32px);
+    color: var(--color-ash);
+    line-height: var(--line-body);
+  }
+
+  .project__copy :global(.project-facts) {
+    margin-bottom: clamp(24px, 3vw, 32px);
+  }
+
+  @media (max-width: 880px) {
+    .project__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.92fr);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .project__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .project--reversed .project__copy,
+    .project--reversed .project__media {
+      order: initial;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .project__heading-row {
+      gap: 10px;
+    }
+
+    .project__heading-row h3 {
+      flex-basis: 100%;
+    }
+  }
+</style>

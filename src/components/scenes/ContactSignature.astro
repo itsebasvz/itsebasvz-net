@@ -1,0 +1,171 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import { media } from "../../data/media";
+import SceneHeader from "../chrome/SceneHeader.astro";
+import MediaPlate from "../media/MediaPlate.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.contact;
+---
+
+<section id="contacto" class="contact-signature" data-scene="08">
+  <div class="content-frame">
+    <SceneHeader number={8} label={copy.sceneLabel} />
+    <div class="contact-signature__grid">
+      <MediaPlate
+        src={media["sebastian-forest-19"]}
+        alt={copy.photoAlt}
+        sizes="(min-width: 1100px) 360px, (min-width: 720px) 31vw, calc(100vw - 40px)"
+        widths={[240, 320, 360, 480, 640, 720, 960, 1280, 1440]}
+        caption={copy.photoCaption}
+        className="contact-signature__media"
+      />
+      <div class="contact-signature__content">
+        <div>
+          <h2 class="type-headline-lg">{copy.heading}</h2>
+          <p class="contact-signature__body type-body-lg">{copy.body}</p>
+        </div>
+        <div class="contact-signature__rows">
+          <a
+            class="contact-row"
+            href="https://github.com/itsebasvz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="contact-row__label">{copy.githubLabel}</span>
+            <span class="contact-row__value">{copy.githubValue} <span aria-hidden="true">↗</span></span>
+          </a>
+          <a
+            class="contact-row"
+            href="https://www.linkedin.com/in/jsebastianvz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="contact-row__label">{copy.linkedInLabel}</span>
+            <span class="contact-row__value">{copy.linkedInValue} <span aria-hidden="true">↗</span></span>
+          </a>
+          <div class="contact-row contact-row--pending">
+            <span class="contact-row__label">{copy.emailLabel}</span>
+            <span class="contact-row__pending">{copy.emailPending}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-signature {
+    padding-block: var(--scene-space) clamp(56px, 7vh, 88px);
+    background: var(--color-forest);
+  }
+
+  .contact-signature__grid {
+    display: grid;
+    grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
+    align-items: stretch;
+    gap: clamp(32px, 4vw, 72px);
+  }
+
+  .contact-signature__media {
+    width: min(100%, 360px);
+  }
+
+  .contact-signature__content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  h2 {
+    max-width: 18ch;
+    margin-bottom: var(--space-5);
+  }
+
+  .contact-signature__body {
+    max-width: 44ch;
+    margin-bottom: clamp(32px, 4vw, 48px);
+    color: var(--color-ash);
+  }
+
+  .contact-signature__rows {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+  }
+
+  .contact-row {
+    display: flex;
+    min-height: 76px;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-5) 18px;
+    border-top: 1px solid var(--rule-visible);
+    border-left: 2px solid transparent;
+    color: var(--color-paper);
+    transition:
+      background-color var(--duration-hover) var(--ease-signal),
+      border-color var(--duration-hover) var(--ease-signal),
+      color var(--duration-hover) var(--ease-signal);
+  }
+
+  a.contact-row:hover {
+    border-left-color: var(--color-signal);
+    background: #0e1410;
+    color: var(--color-signal);
+  }
+
+  .contact-row--pending {
+    border-bottom: 1px solid var(--rule-visible);
+    border-left-color: rgb(91 140 255 / 50%);
+  }
+
+  .contact-row__label,
+  .contact-row__pending {
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .contact-row__value {
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    text-align: right;
+  }
+
+  .contact-row__pending {
+    color: var(--color-electric);
+    letter-spacing: var(--tracking-label-lg);
+    text-align: right;
+  }
+
+  @media (max-width: 680px) {
+    .contact-signature__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .contact-row {
+      min-height: 92px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .contact-row__value,
+    .contact-row__pending {
+      text-align: left;
+    }
+  }
+</style>
