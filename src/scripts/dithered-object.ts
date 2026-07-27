@@ -417,6 +417,13 @@ const MODEL_LIFT = 0.3;
 const METHOD_INDEX: Record<DitherMethod, number> = { bayer: 0, halftone: 1 };
 /** Seconds the idle float takes to reach full amplitude once the entry lands. */
 const SETTLE_TIME = 1.4;
+/**
+ * Fraction of `runThreshold` a run has to drop under before it hands back to a
+ * walk. Hysteresis, not a tuning knob: a caller that keeps refining a
+ * destination will sit on the threshold, and one shared value there means a
+ * crossfade between the two gaits several times a second.
+ */
+const RUN_RELEASE = 0.55;
 
 function disposeObject(root: THREE.Object3D) {
   root.traverse((node) => {
@@ -761,12 +768,14 @@ export function createDitheredObject(
     }
 
     // Gait by distance. Both clips are ground-locked, so the travel speed has to
-    // change with the clip or the stride starts sliding.
-    const running =
-      config.runClip !== "" &&
-      actions.has(config.runClip) &&
-      config.runSpeed > 0 &&
-      distance > config.runThreshold;
+    // change with the clip or the stride starts sliding. It takes a longer
+    // distance to break into a run than it takes to keep one, so a destination
+    // being nudged either side of the threshold does not shred the gait.
+    const runClip = config.runClip !== "" ? actions.get(config.runClip) : undefined;
+    const runnable = runClip !== undefined && config.runSpeed > 0;
+    const threshold =
+      config.runThreshold * (runnable && activeAction === runClip ? RUN_RELEASE : 1);
+    const running = runnable && distance > threshold;
     const gaitClip = running ? config.runClip : config.entryClip;
     const gaitSpeed = running ? config.runSpeed : config.walkSpeed;
 
