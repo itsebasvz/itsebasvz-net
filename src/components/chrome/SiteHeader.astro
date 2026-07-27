@@ -1,0 +1,132 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+import LocaleSwitch from "./LocaleSwitch.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale);
+const homeHref = locale === "es" ? "/" : "/en/";
+const navigation = copy.home.navigation;
+---
+
+<header class="site-header">
+  <div class="site-header__inner content-frame">
+    <a class="brand" href={homeHref} aria-label={copy.siteName}>
+      <span class="brand__bar" aria-hidden="true"></span>
+      <span class="brand__name">{copy.siteName}</span>
+      <span class="brand__descriptor">{copy.descriptor}</span>
+    </a>
+    <div class="site-header__actions">
+      <nav class="site-navigation" aria-label={navigation.label}>
+        <a href="#trabajo">{navigation.work}</a>
+        <a href="#contacto">{navigation.contact}</a>
+      </nav>
+      <LocaleSwitch locale={locale} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    z-index: 50;
+    top: 0;
+    border-bottom: 1px solid var(--rule-subtle);
+    background: var(--color-void);
+  }
+
+  .site-header__inner {
+    display: flex;
+    min-height: var(--header-height);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+
+  .brand {
+    display: flex;
+    min-width: 0;
+    min-height: 44px;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-paper);
+  }
+
+  .brand__bar {
+    width: 2px;
+    height: 18px;
+    flex: 0 0 auto;
+    background: var(--color-signal);
+  }
+
+  .brand__name {
+    overflow: hidden;
+    font-size: 0.9375rem;
+    font-stretch: 94%;
+    font-weight: 620;
+    letter-spacing: -0.025em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .brand__descriptor {
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .site-header__actions,
+  .site-navigation {
+    display: flex;
+    align-items: center;
+  }
+
+  .site-header__actions {
+    gap: clamp(14px, 2vw, 28px);
+  }
+
+  .site-navigation {
+    gap: clamp(14px, 2vw, 28px);
+  }
+
+  .site-navigation a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    transition: color var(--duration-hover) var(--ease-signal);
+  }
+
+  .site-navigation a:hover {
+    color: var(--color-signal);
+  }
+
+  @media (max-width: 660px) {
+    .brand__descriptor {
+      display: none;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .site-navigation a:first-child {
+      display: none;
+    }
+
+    .site-header__actions {
+      gap: var(--space-3);
+    }
+  }
+</style>

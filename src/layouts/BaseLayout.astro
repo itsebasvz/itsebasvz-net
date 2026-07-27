@@ -1,0 +1,47 @@
+---
+import SiteHeader from "../components/chrome/SiteHeader.astro";
+import { getDictionary } from "../i18n";
+import type { Locale } from "../i18n";
+import "../styles/global.css";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+}
+
+const { locale, title, description } = Astro.props;
+const copy = getDictionary(locale);
+const site = Astro.site ?? new URL("https://itsebasvz.net");
+const canonical = new URL(Astro.url.pathname, site);
+const spanishUrl = new URL("/", site);
+const englishUrl = new URL("/en/", site);
+const openGraphLocale = locale === "es" ? "es_MX" : "en_US";
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#090A0B" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={spanishUrl} />
+    <link rel="alternate" hreflang="en" href={englishUrl} />
+    <link rel="alternate" hreflang="x-default" href={spanishUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={openGraphLocale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">{copy.skipToContent}</a>
+    <SiteHeader locale={locale} />
+    <main id="main-content" class="site-main" tabindex="-1">
+      <slot />
+    </main>
+  </body>
+</html>

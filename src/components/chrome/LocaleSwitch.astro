@@ -1,0 +1,49 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale);
+---
+
+<nav class="locale-switch" aria-label={copy.languageSwitch}>
+  <a href="/" lang="es" aria-current={locale === "es" ? "page" : undefined}>ES</a>
+  <span aria-hidden="true">/</span>
+  <a href="/en/" lang="en" aria-current={locale === "en" ? "page" : undefined}>EN</a>
+</nav>
+
+<style>
+  .locale-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: clamp(6px, 1.4vw, 16px);
+    border-left: 1px solid var(--rule-visible);
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+  }
+
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    transition: color var(--duration-hover) var(--ease-signal);
+  }
+
+  a:hover,
+  a:focus-visible,
+  a[aria-current="page"] {
+    color: var(--color-signal);
+  }
+
+  a:focus-visible {
+    outline-offset: 1px;
+  }
+</style>

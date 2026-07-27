@@ -1,0 +1,254 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale);
+const footer = copy.home.footer;
+const homeHref = locale === "es" ? "/" : "/en/";
+---
+
+<footer class="site-footer">
+  <div class="content-frame">
+    <div class="site-footer__grid">
+      <div class="site-footer__identity">
+        <a class="site-footer__brand" href={homeHref}>
+          <span aria-hidden="true"></span>
+          <span>{copy.siteName}</span>
+        </a>
+        <p class="site-footer__tagline">{footer.tagline}</p>
+        <p class="site-footer__location">{copy.descriptor}<br />{footer.location}</p>
+      </div>
+
+      <nav class="site-footer__index" aria-label={footer.index}>
+        <p class="site-footer__heading">{footer.index}</p>
+        <a href="#entrada"><span>01</span><span>{footer.entry}</span></a>
+        <a href="#senales"><span>02</span><span>{footer.signalField}</span></a>
+        <a href="#interfaz"><span>03</span><span>{footer.transformation}</span></a>
+        <a href="#trabajo"><span>04</span><span>{footer.work}</span></a>
+        <a href="#ciudad"><span>05</span><span>{footer.city}</span></a>
+        <a href="#evidencia"><span>06</span><span>{footer.evidence}</span></a>
+        <a href="#salida"><span>07</span><span>{footer.exit}</span></a>
+        <a href="#contacto"><span>08</span><span>{footer.contact}</span></a>
+      </nav>
+
+      <div class="site-footer__colophon">
+        <p class="site-footer__heading">{footer.colophon}</p>
+        <dl>
+          <div><dt>{footer.typography}</dt><dd>Instrument Sans · JetBrains Mono</dd></div>
+          <div><dt>{footer.stack}</dt><dd>Astro · TypeScript · GSAP</dd></div>
+          <div><dt>{footer.infrastructure}</dt><dd>Cloudflare Workers</dd></div>
+        </dl>
+        <p class="site-footer__note">{footer.note}</p>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <div>
+        <span class="site-footer__cdmx"><span aria-hidden="true"></span>CDMX</span>
+        <span>© 2026</span>
+      </div>
+      <div>
+        <span><span class="site-footer__locale-current">{locale.toUpperCase()}</span> / {locale === "es" ? "EN" : "ES"}</span>
+        <a href="#entrada">{footer.backToTop} ↑</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: clamp(48px, 7vh, 80px) clamp(28px, 3.4vh, 40px);
+    border-top: 1px solid var(--rule-visible);
+    background: var(--color-forest);
+  }
+
+  .site-footer__note {
+    max-width: 42ch;
+    margin-top: var(--space-5);
+    color: var(--color-graphite);
+    font-size: var(--font-size-body-sm);
+    line-height: var(--line-body-sm);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.65fr) minmax(240px, 1fr);
+    gap: clamp(32px, 4vw, 64px);
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+
+  .site-footer__brand {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: var(--color-paper);
+    font-size: 1.125rem;
+    font-stretch: 94%;
+    font-weight: 620;
+    letter-spacing: -0.03em;
+    transition: color var(--duration-hover) var(--ease-signal);
+  }
+
+  .site-footer__brand:hover {
+    color: var(--color-signal);
+  }
+
+  .site-footer__brand span:first-child {
+    width: 2px;
+    height: 20px;
+    background: var(--color-signal);
+  }
+
+  .site-footer__tagline {
+    max-width: 14ch;
+    margin-bottom: var(--space-4);
+    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .site-footer__location,
+  .site-footer__heading,
+  .site-footer__index a span:first-child,
+  dt,
+  .site-footer__bottom {
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .site-footer__location {
+    line-height: 1.7;
+  }
+
+  .site-footer__heading {
+    margin-bottom: 14px;
+    color: var(--color-ash);
+  }
+
+  .site-footer__index {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-footer__index a {
+    display: flex;
+    min-height: 36px;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-block: 7px;
+    color: var(--color-paper);
+    transition: color var(--duration-hover) var(--ease-signal);
+  }
+
+  .site-footer__index a:hover {
+    color: var(--color-signal);
+  }
+
+  .site-footer__index a span:last-child {
+    font-size: 0.9375rem;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+  }
+
+  dl,
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  dl > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: 11px;
+    border-top: 1px solid var(--rule-subtle);
+  }
+
+  dd {
+    color: var(--color-ash);
+    font-size: var(--font-size-body-sm);
+    font-weight: 560;
+    letter-spacing: -0.01em;
+    text-align: right;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: clamp(20px, 2.6vw, 28px);
+    border-top: 1px solid var(--rule-subtle);
+  }
+
+  .site-footer__bottom > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(12px, 2vw, 24px);
+  }
+
+  .site-footer__bottom a {
+    color: var(--color-ash);
+    transition: color var(--duration-hover) var(--ease-signal);
+  }
+
+  .site-footer__bottom a:hover {
+    color: var(--color-signal);
+  }
+
+  .site-footer__cdmx {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .site-footer__cdmx span {
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    background: var(--color-signal);
+  }
+
+  .site-footer__locale-current {
+    color: var(--color-signal);
+  }
+
+  @media (max-width: 760px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .site-footer__identity {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .site-footer__identity {
+      grid-column: auto;
+    }
+
+    .site-footer__bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

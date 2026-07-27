@@ -1,0 +1,61 @@
+---
+interface Props {
+  number: number;
+  label: string;
+  total?: number;
+}
+
+const { number, label, total = 8 } = Astro.props;
+const index = String(number).padStart(2, "0");
+const count = String(total).padStart(2, "0");
+---
+
+<header class="scene-header">
+  <span class="scene-header__number">{index}</span>
+  <span class="scene-header__count">/ {count}</span>
+  <span class="scene-header__rule" aria-hidden="true"></span>
+  <span class="scene-header__label">{label}</span>
+</header>
+
+<style>
+  .scene-header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-bottom: clamp(36px, 5vw, 64px);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .scene-header__number {
+    color: var(--color-signal);
+  }
+
+  .scene-header__count {
+    color: var(--color-graphite);
+  }
+
+  .scene-header__rule {
+    height: 1px;
+    flex: 1;
+    background: var(--rule-subtle);
+  }
+
+  .scene-header__label {
+    color: var(--color-ash);
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 480px) {
+    .scene-header {
+      gap: var(--space-3);
+    }
+
+    .scene-header__label {
+      max-width: 13ch;
+    }
+  }
+</style>
