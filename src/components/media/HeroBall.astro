@@ -1,0 +1,491 @@
+---
+import { getDictionary } from "../../i18n";
+import type { Locale } from "../../i18n";
+
+/**
+ * The hero's ball. Its canvas spans the whole content frame, but the walls it
+ * bounces off are measured from four elements of the layout, so the arena is
+ * the box the composition already draws: under the scene counter, right of the
+ * vertical rail, left of the photograph, down to the fox's feet.
+ *
+ * The canvas takes no pointer events — it sits over the headline and the calls
+ * to action. A single button tracks the ball's projected position and carries
+ * the grab, the throw and the keyboard.
+ *
+ * Nothing here knows what kind of ball it is; the shape comes from
+ * `tennis-ball.ts` and the feel from the constants passed to the physics.
+ */
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getDictionary(locale).home.hero.ball;
+---
+
+<div class="hero-ball" data-hero-ball>
+  <canvas class="hero-ball__canvas" data-hero-ball-canvas aria-hidden="true"></canvas>
+  <button type="button" class="hero-ball__handle" data-hero-ball-handle hidden>
+    <span class="visually-hidden">{copy.label}. {copy.hint}</span>
+    <span class="hero-ball__halo" aria-hidden="true"></span>
+  </button>
+</div>
+
+<script>
+  import type { DitheredObjectInstance } from "../../scripts/dithered-object";
+  import type { BallBounds, BallPhysics } from "../../scripts/ball-physics";
+  import type { BallPhase } from "../../scripts/hero-stage";
+  import {
+    CAMERA_DISTANCE,
+    FOX_FRAME_HEIGHT,
+    FOX_GROUND_INSET,
+    emitBall,
+    whenFoxReady
+  } from "../../scripts/hero-stage";
+
+  const mount = document.querySelector<HTMLElement>("[data-hero-ball]");
+  const canvas = mount?.querySelector<HTMLCanvasElement>("[data-hero-ball-canvas]");
+  const handle = mount?.querySelector<HTMLButtonElement>("[data-hero-ball-handle]");
+  const stage = mount?.closest<HTMLElement>("[data-scene='01']");
+
+  const topRef = stage?.querySelector<HTMLElement>("[data-arena-top]");
+  const leftRef = stage?.querySelector<HTMLElement>("[data-arena-left]");
+  const rightRef = stage?.querySelector<HTMLElement>("[data-arena-right]");
+  const floorRef = stage?.querySelector<HTMLElement>("[data-arena-floor]");
+
+  if (mount && canvas && handle && topRef && leftRef && rightRef && floorRef) {
+    // Same breakpoint that reveals the fox: below it the fox box is display:none
+    // and the arena has no floor to measure.
+    const desktop = window.matchMedia("(min-width: 1000px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = Boolean(
+      (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+    );
+
+    /**
+     * Ball diameter in scene units. The fox's `scale: 5` is its length, so a
+     * true tennis ball beside a true fox works out to 0.30 units — about 14 px,
+     * which is four dither cells and no ball at all. This keeps the seam legible
+     * while still reading clearly smaller than a football would.
+     */
+    const BALL_DIAMETER = 0.95;
+    const BALL_RADIUS = BALL_DIAMETER / 2;
+    /** Where the ball enters, across the arena. */
+    const DROP_PERCENT = 0.64;
+    /** Smoothing window for the throw velocity, in seconds. */
+    const POINTER_TAU = 0.07;
+    /** Idle rotation while the ball is at rest, in radians per second. */
+    const IDLE_SPIN = 0.35;
+    /** Minimum pointer target, regardless of how small the ball draws. */
+    const MIN_HANDLE = 44;
+    /** How often a dragged ball reports its position, in ms. */
+    const CARRY_THROTTLE = 80;
+    /** Fallback in case the fox never reports in — the ball still arrives. */
+    const DROP_FALLBACK = 5000;
+
+    const debug = new URLSearchParams(window.location.search).has("arena");
+
+    let instance: DitheredObjectInstance | null = null;
+    let physics: BallPhysics | null = null;
+    let booting = false;
+    let dropped = false;
+    let idleAngle = 0;
+    let bounds: BallBounds = { minX: -1, maxX: 1, minY: -1, maxY: 1 };
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max);
+
+    const whenIdle = (run: () => void) => {
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(run, { timeout: 2000 });
+        return;
+      }
+      window.setTimeout(run, 400);
+    };
+
+    /**
+     * Scene units per CSS pixel, taken from the fox's box rather than this
+     * canvas. Both canvases have to agree on what a unit is or the ball stops
+     * being the right size next to the animal.
+     */
+    function unitsPerPixel() {
+      return FOX_FRAME_HEIGHT / Math.max(floorRef!.clientHeight, 1);
+    }
+
+    function frameHeight() {
+      return Math.max(canvas!.clientHeight, 1) * unitsPerPixel();
+    }
+
+    /** Reads the four walls off the layout and converts them to scene space. */
+    function measure() {
+      if (!instance) return;
+      const box = canvas!.getBoundingClientRect();
+      const floor = floorRef!.getBoundingClientRect();
+
+      const leftPx = leftRef!.getBoundingClientRect().right - box.left;
+      const rightPx = rightRef!.getBoundingClientRect().left - box.left;
+      const topPx = topRef!.getBoundingClientRect().bottom - box.top;
+      const floorPx = floor.bottom - box.top - FOX_GROUND_INSET * floor.height;
+
+      const topLeft = instance.toScene({ x: leftPx, y: topPx });
+      const bottomRight = instance.toScene({ x: rightPx, y: floorPx });
+
+      const minX = topLeft.x + BALL_RADIUS;
+      const maxX = bottomRight.x - BALL_RADIUS;
+      const minY = bottomRight.y + BALL_RADIUS;
+      const maxY = topLeft.y - BALL_RADIUS;
+      // A narrow window can invert the box. Collapsing it to its centre keeps
+      // the ball inside something rather than letting the walls swap places.
+      const midX = (minX + maxX) / 2;
+      const midY = (minY + maxY) / 2;
+      bounds =
+        maxX > minX && maxY > minY
+          ? { minX, maxX, minY, maxY }
+          : { minX: midX, maxX: midX, minY: midY, maxY: midY };
+
+      if (physics) {
+        physics.moveTo(
+          clamp(physics.x, bounds.minX, bounds.maxX),
+          clamp(physics.y, bounds.minY, bounds.maxY)
+        );
+      }
+
+      const size = Math.max(BALL_DIAMETER / unitsPerPixel(), MIN_HANDLE);
+      handle!.style.setProperty("--handle-size", `${Math.round(size)}px`);
+      if (debug) drawDebug(leftPx, rightPx, topPx, floorPx);
+    }
+
+    /**
+     * Tells the stage where the ball is and — more usefully — where it is going
+     * to end up. The look-ahead is the real physics run forward, so the fox can
+     * set off for the landing spot on the throw instead of trailing each bounce.
+     */
+    function report(phase: BallPhase) {
+      if (!instance || !physics) return;
+      const box = canvas!.getBoundingClientRect();
+      const here = instance.toCanvas({ x: physics.x, y: physics.y });
+      const rest = physics.predictRest(bounds);
+      const there = instance.toCanvas({ x: rest.x, y: rest.y });
+      emitBall({
+        clientX: box.left + here.x,
+        restX: box.left + there.x,
+        phase,
+        speed: physics.speed
+      });
+    }
+
+    function drop() {
+      if (dropped || !physics || !instance) return;
+      dropped = true;
+      measure();
+      physics.place(
+        bounds.minX + (bounds.maxX - bounds.minX) * DROP_PERCENT,
+        bounds.maxY
+      );
+      handle!.hidden = false;
+      mount!.dataset.state = "ready";
+    }
+
+    async function boot() {
+      if (instance || booting || saveData || reducedMotion.matches || !desktop.matches) return;
+      booting = true;
+
+      const [{ createDitheredObject }, ball, { createBallPhysics }] = await Promise.all([
+        import("../../scripts/dithered-object"),
+        import("../../scripts/tennis-ball"),
+        import("../../scripts/ball-physics")
+      ]);
+
+      physics = createBallPhysics({
+        radius: BALL_RADIUS,
+        // A tennis ball is the liveliest thing in this class. The ITF spec is a
+        // 53–58 in rebound from 100 in, which puts its coefficient of
+        // restitution near 0.75; a football sits closer to 0.6.
+        floorRestitution: 0.74,
+        wallRestitution: 0.7,
+        // Felt drags. Not dramatic, but it takes the flatness out of a long
+        // throw and is part of why the ball reads as light.
+        airDrag: 0.22,
+        rollFriction: 1.5,
+        // Light and bouncy, so it keeps its small bounces rather than being put
+        // down after the first big one.
+        bounceCutoff: 1.1
+      });
+      const applyPose = ball.createBallPose();
+
+      instance = createDitheredObject(canvas!, {
+        object: ball.createTennisBall({ radius: 1 }),
+        method: "bayer",
+        // Same grain as the fox, so the two read as one material.
+        gridSize: 3,
+        // A stop brighter than the fox's ramp: enough to pull the eye without
+        // competing with the headline.
+        tint: ["#5a1e06", "#ff761a", "#ffd2a8"],
+        toneGain: 1.15,
+        // Lower than the football's 1.6. The felt is a single bright albedo, so
+        // a high gain fills every cell and the ball comes out as a flat disc.
+        // Opening the screen puts the dot gradient back on the shadow side,
+        // which is where the volume comes from.
+        ditherGain: 1.35,
+        // The ball never crosses the canvas boundary, so nothing to feather.
+        edgeFade: 0,
+        highlight: "#ff761a",
+        environmentIntensity: 0.4,
+        // Negative keeps the felt and the seam at the two different roughnesses
+        // they were authored with.
+        roughness: -1,
+        scale: BALL_DIAMETER,
+        yaw: 0,
+        cameraDistance: CAMERA_DISTANCE,
+        frameHeight: frameHeight(),
+        // The physics owns the transform; the built-in idle would fight it.
+        floatIntensity: 0,
+        rotationIntensity: 0,
+        orbit: false,
+        zoom: false,
+        onFrame: (delta, root) => {
+          // Nothing to simulate until the ball has been given a place to land.
+          if (!dropped || !physics || !instance) return;
+          const step = physics.advance(delta, bounds);
+
+          // A ball that never moves reads as scenery. A slow turn while it sits
+          // says it is an object, without asking for anything.
+          if (physics.resting && !physics.held) idleAngle += IDLE_SPIN * delta;
+
+          applyPose(root, { x: physics.x, y: physics.y, angle: physics.angle + idleAngle });
+
+          const screen = instance.toCanvas({ x: physics.x, y: physics.y });
+          handle!.style.transform =
+            `translate3d(${screen.x}px, ${screen.y}px, 0) translate(-50%, -50%)`;
+
+          if (step.landed) report("bounce");
+          if (step.settled) report("settled");
+        },
+        onLoad: () => {
+          measure();
+          // The ball waits for the fox to finish trotting in, so the two
+          // entrances read as one arrival instead of two boots colliding.
+          whenFoxReady(drop);
+          window.setTimeout(drop, DROP_FALLBACK);
+        },
+        onError: () => {
+          mount!.dataset.state = "failed";
+        }
+      });
+
+      if (!instance) mount!.dataset.state = "failed";
+      booting = false;
+    }
+
+    function pointerScene(event: PointerEvent) {
+      const box = canvas!.getBoundingClientRect();
+      return instance!.toScene({ x: event.clientX - box.left, y: event.clientY - box.top });
+    }
+
+    let pointerId: number | null = null;
+    let grabX = 0;
+    let grabY = 0;
+    let throwX = 0;
+    let throwY = 0;
+    let sampledAt = 0;
+    let carriedAt = 0;
+
+    handle.addEventListener("pointerdown", (event) => {
+      if (!instance || !physics || pointerId !== null) return;
+      event.preventDefault();
+      pointerId = event.pointerId;
+      handle.setPointerCapture(event.pointerId);
+      handle.dataset.state = "held";
+      const point = pointerScene(event);
+      grabX = physics.x - point.x;
+      grabY = physics.y - point.y;
+      throwX = 0;
+      throwY = 0;
+      sampledAt = event.timeStamp;
+      physics.grab();
+      report("grab");
+    });
+
+    handle.addEventListener("pointermove", (event) => {
+      if (pointerId !== event.pointerId || !instance || !physics) return;
+      const point = pointerScene(event);
+      const nextX = clamp(point.x + grabX, bounds.minX, bounds.maxX);
+      const nextY = clamp(point.y + grabY, bounds.minY, bounds.maxY);
+
+      const elapsed = (event.timeStamp - sampledAt) / 1000;
+      if (elapsed > 0.0005) {
+        // Exponential average, not the last frame's delta: a single sample makes
+        // identical flicks land at wildly different speeds.
+        const weight = 1 - Math.exp(-elapsed / POINTER_TAU);
+        throwX += ((nextX - physics.x) / elapsed - throwX) * weight;
+        throwY += ((nextY - physics.y) / elapsed - throwY) * weight;
+        sampledAt = event.timeStamp;
+      }
+
+      physics.moveTo(nextX, nextY);
+
+      // Throttled: the fox turns to follow a carried ball, and every pointer
+      // sample would have it flicking round on the slightest wobble.
+      if (event.timeStamp - carriedAt > CARRY_THROTTLE) {
+        carriedAt = event.timeStamp;
+        report("carry");
+      }
+    });
+
+    function release(event: PointerEvent) {
+      if (pointerId !== event.pointerId || !physics) return;
+      pointerId = null;
+      if (handle!.hasPointerCapture(event.pointerId)) {
+        handle!.releasePointerCapture(event.pointerId);
+      }
+      delete handle!.dataset.state;
+      physics.release(throwX, throwY);
+      report("throw");
+    }
+
+    handle.addEventListener("pointerup", release);
+    handle.addEventListener("pointercancel", release);
+
+    handle.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      if (!physics) return;
+      // Kicked toward the far half, so a keyboard press always sends it
+      // somewhere the fox has to travel to.
+      const away = physics.x < (bounds.minX + bounds.maxX) / 2 ? 1 : -1;
+      physics.kick(away * 11, 13);
+      report("throw");
+    });
+
+    let debugBox: HTMLElement | null = null;
+    let debugFloor: HTMLElement | null = null;
+
+    /** `?arena` — the only practical way to eyeball the walls and the floor. */
+    function drawDebug(left: number, right: number, top: number, floor: number) {
+      if (!debugBox) {
+        debugBox = document.createElement("div");
+        debugFloor = document.createElement("div");
+        debugBox.style.cssText =
+          "position:absolute;outline:1px dashed rgb(255 118 26 / 60%);pointer-events:none";
+        debugFloor.style.cssText =
+          "position:absolute;border-top:1px solid rgb(255 118 26 / 90%);pointer-events:none";
+        mount!.append(debugBox, debugFloor);
+      }
+      debugBox.style.left = `${left}px`;
+      debugBox.style.top = `${top}px`;
+      debugBox.style.width = `${right - left}px`;
+      debugBox.style.height = `${floor - top}px`;
+      debugFloor!.style.left = `${left}px`;
+      debugFloor!.style.top = `${floor}px`;
+      debugFloor!.style.width = `${right - left}px`;
+    }
+
+    let pending = 0;
+    const remeasure = () => {
+      if (pending) return;
+      pending = window.requestAnimationFrame(() => {
+        pending = 0;
+        if (!instance) return;
+        instance.setOptions({ frameHeight: frameHeight() });
+        measure();
+      });
+    };
+
+    const observer = new ResizeObserver(remeasure);
+    observer.observe(canvas);
+    observer.observe(floorRef);
+
+    const start = () => whenIdle(() => void boot());
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+
+    desktop.addEventListener("change", () => {
+      if (desktop.matches) void boot();
+    });
+  }
+</script>
+
+<style>
+  /* Spans the whole content frame so the ball can fly over the headline, and
+     takes no pointer events so the calls to action underneath still work. */
+  .hero-ball {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-ball__canvas {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    inset: 0;
+    transition: opacity 900ms var(--ease-signal);
+  }
+
+  .hero-ball[data-state="ready"] .hero-ball__canvas {
+    opacity: 1;
+  }
+
+  /* Follows the ball's projected centre. Transform only — it moves every frame
+     and must never touch layout. */
+  .hero-ball__handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    width: var(--handle-size, 44px);
+    height: var(--handle-size, 44px);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    cursor: grab;
+    place-items: center;
+    pointer-events: auto;
+    /* Without this a drag scrolls the page on trackpads and touch screens. */
+    touch-action: none;
+    will-change: transform;
+  }
+
+  .hero-ball__handle[data-state="held"] {
+    cursor: grabbing;
+  }
+
+  .hero-ball__halo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(255 118 26 / 26%) 0%, transparent 70%);
+    opacity: 0;
+    transition:
+      opacity var(--duration-hover) var(--ease-signal),
+      transform var(--duration-hover) var(--ease-signal);
+    transform: scale(0.8);
+  }
+
+  .hero-ball__handle:hover .hero-ball__halo,
+  .hero-ball__handle[data-state="held"] .hero-ball__halo {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+
+  .hero-ball__handle:focus-visible {
+    outline: 2px solid var(--color-paper);
+    outline-offset: 4px;
+  }
+
+  .hero-ball__handle:focus-visible .hero-ball__halo {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-ball {
+      display: none;
+    }
+  }
+</style>
