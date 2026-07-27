@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: #090A0B; color: #F0EDE6; font-family: "Instrument Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  img { max-width: 100%; }
+  a { color: #FF761A; text-decoration: none; }
+  a:hover { color: #F0EDE6; }
+  ::selection { background: #FF761A; color: #090A0B; }
+  :focus-visible { outline: 2px solid #5B8CFF; outline-offset: 3px; }
+  h1, h2, h3, h4, p, figure, blockquote { margin: 0; }
+  /* The evidence strip keeps every plate at its native ratio by making each
+     width proportional to that ratio, so heights match. Below 1000px four
+     proportional plates get too small, so the band becomes a grid — which also
+     makes the inline flex-grow values inert, no per-figure override needed. */
+  @media (max-width: 1000px) {
+    /* The 4:3 landscape can't share a row with a 3:4 portrait at equal widths
+       without one cell dead-ending early, so it spans the full width and the
+       three portraits — all the same ratio — take their own flush row. */
+    [data-evidence] { display: grid !important; grid-template-columns: repeat(3, 1fr); }
+    [data-evidence] > figure:first-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    [data-evidence] { grid-template-columns: 1fr; }
+  }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="background:#090A0B;color:#F0EDE6;font-family:'Instrument Sans',system-ui,sans-serif;font-size:1rem;line-height:1.55;">
+
+<div style="position:fixed;top:0;left:0;right:0;height:2px;background:rgba(113,116,122,0.18);z-index:60;">
+  <div ref="{{ barRef }}" style="height:100%;width:0%;background:#FF761A;"></div>
+</div>
+
+<header style="position:sticky;top:0;z-index:50;background:#090A0B;border-bottom:1px solid rgba(113,116,122,0.24);">
+  <div style="max-width:1600px;margin:0 auto;padding:0 clamp(20px,3.4vw,40px);height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+    <a href="#entrada" style="display:flex;align-items:center;gap:10px;color:#F0EDE6;min-width:0;">
+      <span style="width:2px;height:18px;flex:0 0 auto;background:#FF761A;"></span>
+      <span style="font-size:0.9375rem;font-weight:620;letter-spacing:-0.025em;white-space:nowrap;">Sebastián Vázquez</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;white-space:nowrap;">Ingeniería creativa</span>
+    </a>
+    <nav style="display:flex;align-items:center;gap:clamp(14px,2vw,28px);">
+      <a href="#trabajo" style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#F0EDE6;" style-hover="color:#FF761A">Proyectos</a>
+      <a href="#contacto" style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#F0EDE6;" style-hover="color:#FF761A">Contacto</a>
+      <span style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;padding-left:clamp(6px,1.4vw,16px);border-left:1px solid rgba(113,116,122,0.3);">
+        <span style="color:#FF761A;">ES</span>
+        <span style="color:#71747A;">/</span>
+        <span style="color:#71747A;">EN</span>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<section id="entrada" data-scene="01" data-screen-label="01 Entrada" style="background:#090A0B;padding:clamp(56px,9vh,112px) clamp(20px,3.4vw,40px) clamp(80px,11vh,144px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,64px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">01</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Entrada · Señal</span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:clamp(40px,5vw,80px);">
+
+      <div style="flex:1 1 520px;min-width:0;display:flex;gap:clamp(16px,2.2vw,28px);">
+        <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:8px;">
+          <span style="width:1px;height:clamp(40px,7vw,72px);background:#FF761A;"></span>
+          <span style="writing-mode:vertical-rl;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#71747A;">Signals to systems</span>
+        </div>
+        <div style="min-width:0;">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:clamp(20px,2.6vw,30px);">Sebastián Vázquez · Ingeniería creativa · CDMX</p>
+          <h1 style="font-size:clamp(3rem,7.6vw,6rem);font-weight:650;line-height:0.92;letter-spacing:-0.055em;text-wrap:balance;margin-bottom:clamp(22px,2.8vw,34px);">De señales<br />a sistemas<span style="color:#FF761A;">.</span></h1>
+          <p style="font-size:clamp(1.125rem,1.5vw,1.375rem);line-height:1.45;letter-spacing:-0.01em;max-width:34ch;color:#F0EDE6;margin-bottom:clamp(30px,3.6vw,42px);">Convierto ideas, datos y comunidades en productos digitales que funcionan.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="#trabajo" style="display:inline-flex;align-items:center;height:44px;padding:0 22px;background:#FF761A;color:#090A0B;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1),color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#F0EDE6;color:#090A0B">Ver proyectos</a>
+            <a href="#contacto" style="display:inline-flex;align-items:center;height:44px;padding:0 22px;background:transparent;color:#F0EDE6;border:1px solid rgba(113,116,122,0.5);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1),border-color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#111214;border-color:#AAA6A0">Contacto</a>
+          </div>
+        </div>
+      </div>
+
+      <figure style="flex:0 1 440px;min-width:260px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/signal-wall-05.jpg" alt="Muro de stickers en una calle de la Ciudad de México: firmas, personajes y tipografía pegada capa sobre capa." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#0C0B0D;" />
+        <figcaption style="display:flex;justify-content:space-between;gap:12px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">
+          <span>05 · Muro de señales</span>
+          <span>CDMX</span>
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
+<section id="senales" data-scene="02" data-screen-label="02 Campo de señales" style="background:linear-gradient(180deg,#090A0B 0%,#0C0B0D 14%);padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">02</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Campo de señales</span>
+    </div>
+
+    <div data-reveal style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(48px,6vw,84px);">
+      <div style="background:#111214;padding:clamp(20px,2.2vw,28px);display:flex;flex-direction:column;gap:10px;min-height:180px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">01</span>
+        <h3 style="font-size:1.5rem;font-weight:560;line-height:1.1;letter-spacing:-0.015em;">Leer</h3>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Read</span>
+        <p style="margin-top:auto;font-size:0.875rem;line-height:1.5;color:#AAA6A0;">Entender el contexto antes de construir.</p>
+      </div>
+      <div style="background:#111214;padding:clamp(20px,2.2vw,28px);display:flex;flex-direction:column;gap:10px;min-height:180px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">02</span>
+        <h3 style="font-size:1.5rem;font-weight:560;line-height:1.1;letter-spacing:-0.015em;">Construir</h3>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Build</span>
+        <p style="margin-top:auto;font-size:0.875rem;line-height:1.5;color:#AAA6A0;">Convertir una decisión en producto.</p>
+      </div>
+      <div style="background:#111214;padding:clamp(20px,2.2vw,28px);display:flex;flex-direction:column;gap:10px;min-height:180px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">03</span>
+        <h3 style="font-size:1.5rem;font-weight:560;line-height:1.1;letter-spacing:-0.015em;">Conectar</h3>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Connect</span>
+        <p style="margin-top:auto;font-size:0.875rem;line-height:1.5;color:#AAA6A0;">Vincular personas, datos y servicios.</p>
+      </div>
+      <div style="background:#111214;padding:clamp(20px,2.2vw,28px);display:flex;flex-direction:column;gap:10px;min-height:180px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">04</span>
+        <h3 style="font-size:1.5rem;font-weight:560;line-height:1.1;letter-spacing:-0.015em;">Abrir</h3>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Open</span>
+        <p style="margin-top:auto;font-size:0.875rem;line-height:1.5;color:#AAA6A0;">Compartir herramientas y conocimiento.</p>
+      </div>
+      <div style="background:#111214;padding:clamp(20px,2.2vw,28px);display:flex;flex-direction:column;gap:10px;min-height:180px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">05</span>
+        <h3 style="font-size:1.5rem;font-weight:560;line-height:1.1;letter-spacing:-0.015em;">Lanzar</h3>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Ship</span>
+        <p style="margin-top:auto;font-size:0.875rem;line-height:1.5;color:#AAA6A0;">Llevar el sistema al mundo real.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(24px,3vw,40px);align-items:flex-start;">
+      <figure data-reveal style="flex:1 1 300px;min-width:240px;max-width:480px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/signal-texture-14-crop.jpg" alt="Superficie amarilla saturada de stickers y calcomanías superpuestas, con tipografía dibujada a mano." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#0C0B0D;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">14 · Densidad · Capa sobre capa</figcaption>
+      </figure>
+      <figure data-reveal style="flex:1 1 300px;min-width:240px;max-width:480px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/signal-wall-08-crop.jpg" alt="Cartel pegado en la calle con la ilustración de un casete y otros carteles impresos alrededor." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#0C0B0D;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">08 · Módulo · Composición pegada</figcaption>
+      </figure>
+      <div data-reveal style="flex:1 1 260px;min-width:240px;align-self:center;">
+        <p style="font-size:clamp(1.375rem,2.1vw,1.75rem);font-weight:580;line-height:1.15;letter-spacing:-0.025em;margin-bottom:16px;">La calle ya es un lenguaje.</p>
+        <p style="font-size:1rem;line-height:1.55;color:#AAA6A0;max-width:38ch;">Cada sticker es una decisión: qué se pega, dónde, sobre qué. Ese vocabulario es el punto de partida, no la decoración.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="interfaz" data-scene="03" data-screen-label="03 Señal a interfaz" style="background:linear-gradient(180deg,#0C0B0D 0%,#12090C 16%);padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">03</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">De señal a interfaz</span>
+    </div>
+
+    <h2 data-reveal style="font-size:clamp(2.25rem,5vw,4.5rem);font-weight:620;line-height:0.96;letter-spacing:-0.045em;max-width:22ch;margin-bottom:clamp(40px,5vw,72px);">Las señales se vuelven sistemas.</h2>
+
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(24px,3vw,48px);align-items:stretch;">
+
+      <figure data-reveal style="flex:1 1 300px;min-width:250px;max-width:460px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/signal-wall-09.jpg" alt="Superficie roja y blanca con trazos de grafiti y stickers ilustrados pegados encima." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#0C0B0D;" />
+        <figcaption style="display:flex;justify-content:space-between;gap:12px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">
+          <span>Señal · Fuente orgánica</span>
+          <span style="color:#FF761A;">09</span>
+        </figcaption>
+      </figure>
+
+      <div data-reveal style="flex:1 1 420px;min-width:280px;display:flex;flex-direction:column;gap:12px;">
+        <div style="flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);">
+
+          <div style="background:#0C0B0D;padding:clamp(18px,2vw,26px);display:flex;flex-direction:column;gap:16px;justify-content:space-between;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Etiqueta · radio 2px</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <span style="display:inline-flex;align-items:center;padding:6px 10px;background:#111214;border:1px solid rgba(113,116,122,0.34);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#F0EDE6;">Astro</span>
+              <span style="display:inline-flex;align-items:center;padding:6px 10px;background:#111214;border:1px solid rgba(113,116,122,0.34);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#F0EDE6;">TypeScript</span>
+              <span style="display:inline-flex;align-items:center;padding:6px 10px;background:#111214;border:1px solid rgba(113,116,122,0.34);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#F0EDE6;">Python</span>
+            </div>
+          </div>
+
+          <div style="background:#0C0B0D;padding:clamp(18px,2vw,26px);display:flex;flex-direction:column;gap:16px;justify-content:space-between;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Acción · 44px · radio 4px</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <span style="display:inline-flex;align-items:center;height:44px;padding:0 18px;background:#FF761A;color:#090A0B;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;">Primaria</span>
+              <span style="display:inline-flex;align-items:center;height:44px;padding:0 18px;background:transparent;color:#F0EDE6;border:1px solid rgba(113,116,122,0.5);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;">Secundaria</span>
+            </div>
+          </div>
+
+          <div style="background:#0C0B0D;padding:clamp(18px,2vw,26px);display:flex;flex-direction:column;gap:16px;justify-content:space-between;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Dato de proyecto</span>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:1px solid rgba(113,116,122,0.24);">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Escala</span>
+                <span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">3,000+ tracks</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Resultado</span>
+                <span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;color:#FF761A;">1er lugar</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#0C0B0D;padding:clamp(18px,2vw,26px);display:flex;flex-direction:column;gap:16px;justify-content:space-between;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Índice de escena</span>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">04</span>
+              <span style="flex:1;height:1px;background:rgba(113,116,122,0.4);"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+            </div>
+          </div>
+
+        </div>
+        <p style="display:flex;justify-content:space-between;gap:12px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">
+          <span>Sistema · Geometría resuelta</span>
+          <span>Retícula · Rotación 0°</span>
+        </p>
+      </div>
+
+    </div>
+
+    <p data-reveal style="margin-top:clamp(32px,4vw,56px);max-width:66ch;font-size:1rem;line-height:1.55;color:#AAA6A0;">Lo orgánico queda en la fotografía. La interfaz aporta el orden: mismos módulos, misma retícula, sin rotaciones ni bordes rotos que imiten un sticker.</p>
+
+  </div>
+</section>
+
+<section id="trabajo" data-scene="04" data-screen-label="04 Trabajo seleccionado" style="background:linear-gradient(180deg,#12090C 0%,#090A0B 12%);padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">04</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Trabajo seleccionado</span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(56px,7vw,96px);">
+      <h2 style="font-size:clamp(2.25rem,5vw,4.5rem);font-weight:620;line-height:0.96;letter-spacing:-0.045em;max-width:20ch;">Sistemas en el mundo real.</h2>
+      <p style="font-size:1rem;line-height:1.55;color:#AAA6A0;max-width:32ch;">Cuatro problemas distintos. Una misma forma de construir.</p>
+    </div>
+
+    <article style="padding-bottom:clamp(56px,7vw,96px);border-bottom:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(56px,7vw,96px);">
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(28px,3.4vw,56px);align-items:flex-start;">
+        <div data-reveal style="flex:1 1 340px;min-width:280px;">
+          <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:18px;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;color:#FF761A;">01</span>
+            <h3 style="font-size:clamp(2rem,3.4vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;">Duet</h3>
+            <span style="display:inline-flex;align-items:center;padding:4px 9px;border:1px solid rgba(113,116,122,0.4);border-radius:9999px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Alpha</span>
+          </div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:clamp(20px,2.4vw,28px);">Tooling de IA · Open source · Alpha</p>
+          <p style="font-size:clamp(1.125rem,1.5vw,1.375rem);line-height:1.4;letter-spacing:-0.015em;font-weight:560;max-width:30ch;margin-bottom:16px;">Razonamiento de alto valor para decidir. Workers intercambiables para ejecutar.</p>
+          <p style="font-size:1rem;line-height:1.55;color:#AAA6A0;max-width:44ch;margin-bottom:clamp(24px,3vw,32px);">Un orquestador de agentes que separa planeación, ejecución y revisión para usar cada modelo donde aporta más.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(24px,3vw,32px);">
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Licencia</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">AGPL-3.0</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Rol</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Autor</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Estado</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">En desarrollo</span></div>
+          </div>
+          <a href="https://github.com/itsebasvz" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border:1px solid rgba(113,116,122,0.5);border-radius:4px;color:#F0EDE6;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1),border-color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#111214;border-color:#AAA6A0">Ver código <span style="color:#FF761A;">↗</span></a>
+        </div>
+
+        <div data-reveal style="flex:1 1 460px;min-width:280px;display:flex;flex-direction:column;gap:clamp(14px,1.6vw,20px);">
+          <figure style="margin:0;background:#17181B;border:1px solid rgba(113,116,122,0.26);">
+            <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.6);"></span>
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+              <span style="margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">duet · worker ejecutando</span>
+            </div>
+            <img src="src/assets/projects/duet/worker-running.png" alt="Interfaz de Duet: un brief delegado a un worker, en estado de ejecución, con la actividad del agente en curso." style="display:block;width:100%;aspect-ratio:1917/1079;object-fit:cover;" />
+          </figure>
+          <figure style="margin:0;width:min(86%,540px);margin-top:clamp(-30px,-2.4vw,-14px);margin-left:clamp(-52px,-3.6vw,-16px);background:#17181B;border:1px solid rgba(113,116,122,0.26);box-shadow:0 0 0 7px #090A0B;position:relative;">
+            <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+              <span style="width:7px;height:7px;border-radius:9999px;background:#FF761A;"></span>
+              <span style="margin-left:4px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">ejecución terminada</span>
+            </div>
+            <img src="src/assets/projects/duet/worker-done.png" alt="Interfaz de Duet mostrando el resultado devuelto por el worker una vez terminada la ejecución." style="display:block;width:100%;aspect-ratio:1918/1079;object-fit:cover;" />
+          </figure>
+          <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Estado → actividad → resultado</figcaption>
+        </div>
+      </div>
+    </article>
+
+    <article style="padding-bottom:clamp(56px,7vw,96px);border-bottom:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(56px,7vw,96px);">
+      <div style="display:flex;flex-wrap:wrap;flex-direction:row-reverse;gap:clamp(28px,3.4vw,56px);align-items:flex-start;">
+        <div data-reveal style="flex:1 1 340px;min-width:280px;">
+          <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;color:#FF761A;">02</span>
+            <h3 style="font-size:clamp(1.75rem,3vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;">World Cup CDMX Guide</h3>
+          </div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:clamp(20px,2.4vw,28px);">Product engineering · HBS · 2026</p>
+          <p style="font-size:clamp(1.125rem,1.5vw,1.375rem);line-height:1.4;letter-spacing:-0.015em;font-weight:560;max-width:30ch;margin-bottom:16px;">CDMX convertida en una guía accionable para un crew internacional con poco tiempo.</p>
+          <p style="font-size:1rem;line-height:1.55;color:#AAA6A0;max-width:44ch;margin-bottom:clamp(24px,3vw,32px);">Una experiencia mobile-first y multilingüe que reúne cultura, comida, rutas, seguridad y asistencia contextual en un solo lugar.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(24px,3vw,32px);">
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Contexto</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">HBS internship</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Rol</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Diseño y desarrollo</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Salida</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Demo pública</span></div>
+          </div>
+          <a href="https://worldcup-cdmx-guide.vercel.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;background:#FF761A;color:#090A0B;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#F0EDE6">Abrir demo ↗</a>
+        </div>
+
+        <div data-reveal style="flex:1 1 460px;min-width:280px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:clamp(14px,1.6vw,20px);">
+            <figure style="margin:0;flex:1 1 240px;min-width:240px;background:#17181B;border:1px solid rgba(113,116,122,0.26);">
+              <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+                <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.6);"></span>
+                <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+                <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+                <span style="margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">worldcup-cdmx-guide · es</span>
+              </div>
+              <img src="src/assets/projects/world-cup-cdmx-guide/desktop.png" alt="Portada de la guía: titular grande, subtítulo y botón principal, con el asistente Zayu en la esquina." style="display:block;width:100%;aspect-ratio:1440/1000;object-fit:cover;object-position:top center;" />
+            </figure>
+            <figure style="margin:0;flex:0 0 auto;width:clamp(142px,19vw,196px);">
+              <img src="src/assets/projects/world-cup-cdmx-guide/mobile.png" alt="La misma guía en teléfono: navegación por idioma y contenido priorizado para pantalla vertical." style="display:block;width:100%;aspect-ratio:390/844;object-fit:cover;object-position:top center;border:1px solid rgba(113,116,122,0.34);border-radius:8px;background:#17181B;" />
+              <figcaption style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Mobile-first</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article style="padding-bottom:clamp(56px,7vw,96px);border-bottom:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(56px,7vw,96px);">
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(28px,3.4vw,56px);align-items:flex-start;">
+        <div data-reveal style="flex:1 1 340px;min-width:280px;">
+          <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;color:#FF761A;">03</span>
+            <h3 style="font-size:clamp(2rem,3.4vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;">Hello World</h3>
+            <span style="display:inline-flex;align-items:center;padding:4px 9px;border:1px solid rgba(113,116,122,0.4);border-radius:9999px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Activo</span>
+          </div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:clamp(20px,2.4vw,28px);">Comunidad · Producto · Activo</p>
+          <p style="font-size:clamp(1.125rem,1.5vw,1.375rem);line-height:1.4;letter-spacing:-0.015em;font-weight:560;max-width:30ch;margin-bottom:16px;">Una comunidad necesita más que una landing. Necesita infraestructura para crecer.</p>
+          <p style="font-size:1rem;line-height:1.55;color:#AAA6A0;max-width:44ch;margin-bottom:clamp(24px,3vw,32px);">El sitio público, el portal de miembros y la operación de la mesa directiva viven en un mismo sistema.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(24px,3vw,32px);">
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Rol</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Cofundador</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Base</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">FES Aragón</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Alcance</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Sitio + portal + admin</span></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="https://helloworld-unam.tech/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;background:#FF761A;color:#090A0B;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#F0EDE6">Visitar sitio ↗</a>
+            <a href="https://github.com/itsebasvz" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border:1px solid rgba(113,116,122,0.5);border-radius:4px;color:#F0EDE6;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1),border-color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#111214;border-color:#AAA6A0">Ver código <span style="color:#FF761A;">↗</span></a>
+          </div>
+        </div>
+
+        <div data-reveal style="flex:1 1 460px;min-width:280px;display:flex;flex-direction:column;gap:clamp(14px,1.6vw,20px);">
+          <figure style="margin:0;background:#17181B;border:1px solid rgba(113,116,122,0.26);">
+            <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.6);"></span>
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+              <span style="margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">helloworld-unam.tech · superficie pública</span>
+            </div>
+            <img src="src/assets/projects/hello-world/public-surface.png" alt="Portada pública de Hello World: titular, presentación del club y foto de la comunidad." style="display:block;width:100%;aspect-ratio:1440/900;object-fit:cover;object-position:top center;" />
+          </figure>
+          <figure style="margin:0;width:min(86%,540px);margin-top:clamp(-30px,-2.4vw,-14px);margin-left:clamp(-52px,-3.6vw,-16px);background:#17181B;border:1px solid rgba(113,116,122,0.26);box-shadow:0 0 0 7px #090A0B;position:relative;">
+            <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+              <span style="width:7px;height:7px;border-radius:9999px;background:#5B8CFF;"></span>
+              <span style="margin-left:4px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">portal de miembros · datos sanitizados</span>
+            </div>
+            <img src="src/assets/projects/hello-world/member-sanitized.png" alt="Portal de miembros de Hello World con datos sanitizados: evidencias, puntos y periodo activo." style="display:block;width:100%;aspect-ratio:1100/650;object-fit:cover;object-position:top center;" />
+          </figure>
+          <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Superficie pública + sistema en uso</figcaption>
+        </div>
+      </div>
+    </article>
+
+    <article>
+      <div style="display:flex;flex-wrap:wrap;flex-direction:row-reverse;gap:clamp(28px,3.4vw,56px);align-items:flex-start;">
+        <div data-reveal style="flex:1 1 340px;min-width:280px;">
+          <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;color:#FF761A;">04</span>
+            <h3 style="font-size:clamp(2rem,3.4vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;">HackODS</h3>
+            <span style="display:inline-flex;align-items:center;padding:4px 9px;background:#FF761A;color:#090A0B;border-radius:9999px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;">1er lugar</span>
+          </div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:clamp(20px,2.4vw,28px);">Data engineering · HackODS UNAM 2026</p>
+          <p style="font-size:clamp(1.125rem,1.5vw,1.375rem);line-height:1.4;letter-spacing:-0.015em;font-weight:560;max-width:30ch;margin-bottom:16px;">Datos públicos dispersos convertidos en una lectura municipal de la desigualdad hídrica.</p>
+          <p style="font-size:1rem;line-height:1.55;color:#AAA6A0;max-width:44ch;margin-bottom:clamp(24px,3vw,32px);">Cinco fuentes gubernamentales, un pipeline reproducible y un dashboard para explorar la relación entre infraestructura de agua y pobreza — sin presentar una correlación como causalidad.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);margin-bottom:clamp(24px,3vw,32px);">
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Fuentes</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">INEGI · CONAGUA · CONEVAL · SHCP · SIODS</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Rol</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Arquitectura · equipo linuxitOS</span></div>
+            <div style="background:#090A0B;padding:14px 16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:4px;">Resultado</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;color:#FF761A;">1er lugar · 2026</span></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="Caso HackODS.dc.html" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;background:#FF761A;color:#090A0B;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#F0EDE6">Ver caso</a>
+            <a href="https://hackods.github.io/HackODS2026_linuxitOS/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border:1px solid rgba(113,116,122,0.5);border-radius:4px;color:#F0EDE6;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:background 180ms cubic-bezier(0.22,1,0.36,1),border-color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="background:#111214;border-color:#AAA6A0">Abrir dashboard <span style="color:#FF761A;">↗</span></a>
+          </div>
+        </div>
+
+        <div data-reveal style="flex:1 1 460px;min-width:280px;display:flex;flex-direction:column;gap:clamp(14px,1.6vw,20px);">
+          <figure style="margin:0;background:#17181B;border:1px solid rgba(113,116,122,0.26);">
+            <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.6);"></span>
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+              <span style="width:7px;height:7px;border-radius:9999px;background:rgba(113,116,122,0.4);"></span>
+              <span style="margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">dashboard · indicadores nacionales</span>
+            </div>
+            <img src="src/assets/projects/hackods/indicators.png" alt="Dashboard de HackODS: tesis del proyecto e indicadores de cobertura nacional, municipios rurales y desigualdad hídrica." style="display:block;width:100%;aspect-ratio:1440/900;object-fit:cover;object-position:top center;" />
+          </figure>
+          <figure style="margin:0;width:min(86%,540px);margin-top:clamp(-30px,-2.4vw,-14px);background:#17181B;border:1px solid rgba(113,116,122,0.26);box-shadow:0 0 0 7px #090A0B;position:relative;">
+            <div style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid rgba(113,116,122,0.22);">
+              <span style="width:7px;height:7px;border-radius:9999px;background:#5B8CFF;"></span>
+              <span style="margin-left:4px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.06em;color:#71747A;">territorio · mapa y rezago</span>
+            </div>
+            <img src="src/assets/projects/hackods/map-ranking.png" alt="Mapa de cobertura de agua por municipio junto al ranking de municipios con mayor rezago." style="display:block;width:100%;aspect-ratio:1440/1050;object-fit:cover;object-position:top center;" />
+          </figure>
+          <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Método → territorio</figcaption>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="ciudad" data-scene="05" data-screen-label="05 Ciudad y ecosistema" style="background:linear-gradient(180deg,#090A0B 0%,#080D17 14%);padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">05</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Ciudad · Ecosistema</span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(32px,4vw,72px);align-items:flex-end;">
+      <figure data-reveal style="flex:0 1 400px;min-width:250px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/cdmx-blue-hour-16.jpg" alt="Torre Latinoamericana al final de una calle del centro de la Ciudad de México durante la hora azul." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#080D17;" />
+        <figcaption style="display:flex;justify-content:space-between;gap:12px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">
+          <span>16 · Centro · Hora azul</span>
+          <span>CDMX</span>
+        </figcaption>
+      </figure>
+
+      <div data-reveal style="flex:1 1 420px;min-width:280px;">
+        <h2 style="font-size:clamp(2rem,4.2vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;max-width:18ch;margin-bottom:20px;">Construido en CDMX. Conectado a todas partes.</h2>
+        <p style="font-size:clamp(1.125rem,1.4vw,1.25rem);line-height:1.45;color:#AAA6A0;max-width:40ch;margin-bottom:clamp(32px,4vw,48px);">Software, comunidad e infraestructura bajo una misma red.</p>
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Homelab</span>
+            <span style="font-size:1rem;font-weight:560;letter-spacing:-0.015em;">Servicios self-hosted en operación</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Dominios</span>
+            <span style="font-size:1rem;font-weight:560;letter-spacing:-0.015em;">Infraestructura propia y despliegue estático</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);border-bottom:1px solid rgba(113,116,122,0.26);">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Comunidad</span>
+            <span style="font-size:1rem;font-weight:560;letter-spacing:-0.015em;">Hello World · FES Aragón, UNAM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="evidencia" data-scene="06" data-screen-label="06 Evidencia" style="background:linear-gradient(180deg,#080D17 0%,#091114 16%);padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">06</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Evidencia</span>
+    </div>
+
+    <h2 data-reveal style="font-size:clamp(2rem,4.2vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;margin-bottom:clamp(40px,5vw,72px);">El trabajo deja evidencia.</h2>
+
+    <div data-reveal data-evidence style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:clamp(16px,2vw,28px);">
+      <figure style="margin:0;flex:5.33 1 0;min-width:0;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/evidence/hackods-01.jpg" alt="El equipo linuxitOS con sus constancias tras ganar el primer lugar de HackODS UNAM." style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#091114;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;line-height:1.5;">HackODS UNAM · 1er lugar<br /><span style="color:#71747A;">Equipo linuxitOS · datos abiertos</span></figcaption>
+      </figure>
+      <figure style="margin:0;flex:3 1 0;min-width:0;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/evidence/obb-13.jpg" alt="Sebastián y su equipo con las constancias del hackathon Mobility &amp; AI frente a una pantalla gigante en Austria." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#091114;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;line-height:1.5;">Austria · Hackathon Mobility &amp; AI<br /><span style="color:#71747A;">Participación internacional</span></figcaption>
+      </figure>
+      <figure style="margin:0;flex:3 1 0;min-width:0;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/evidence/hbs-02.jpg" alt="Sebastián sentado en la sala de prensa del estadio, mostrando su certificado del FIFA Host Broadcast Intern Programme." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#091114;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;line-height:1.5;">HBS · FIFA Host Broadcast<br /><span style="color:#71747A;">Intern programme · 2026</span></figcaption>
+      </figure>
+      <figure style="margin:0;flex:3 1 0;min-width:0;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/evidence/hello-world-04.jpg" alt="Interior del estadio de la Ciudad de México lleno durante la ceremonia de un partido del Mundial 2026." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#091114;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;line-height:1.5;">Estadio CDMX · Mundial 2026<br /><span style="color:#71747A;">Contexto real del producto</span></figcaption>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
+<section id="salida" data-scene="07" data-screen-label="07 Salida" style="background:linear-gradient(180deg,#091114 0%,#0A100B 18%);padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">07</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Salida · Ciudad afuera</span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(32px,4vw,72px);align-items:center;">
+      <figure data-reveal style="flex:0 1 420px;min-width:250px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/road-signal-20.jpg" alt="Camino de montaña con una señal vial amarilla cubierta de stickers y grafiti, y una persona caminando por la orilla." style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#0A100B;" />
+        <figcaption style="display:flex;justify-content:space-between;gap:12px;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">
+          <span>20 · Señal fuera de la ciudad</span>
+          <span>Edomex</span>
+        </figcaption>
+      </figure>
+      <div data-reveal style="flex:1 1 380px;min-width:280px;">
+        <h2 style="font-size:clamp(1.875rem,3.8vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;max-width:20ch;">El contexto cambia. La forma de construir permanece.</h2>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="contacto" data-scene="08" data-screen-label="08 Contacto" style="background:#0A100B;padding:clamp(80px,12vh,152px) clamp(20px,3.4vw,40px) clamp(56px,7vh,88px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(36px,5vw,60px);">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#FF761A;">08</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">/ 08</span>
+      <span style="flex:1;height:1px;background:rgba(113,116,122,0.26);"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Contacto · Firma</span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(32px,4vw,72px);align-items:stretch;">
+      <figure data-reveal style="flex:0 1 360px;min-width:240px;display:flex;flex-direction:column;gap:12px;">
+        <img src="src/assets/photography/sebastian-forest-19.jpg" alt="Sebastián Vázquez en cuclillas junto a un arroyo en el bosque, mirando hacia el agua." style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#0A100B;" />
+        <figcaption style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">19 · Sebastián Vázquez</figcaption>
+      </figure>
+
+      <div data-reveal style="flex:1 1 440px;min-width:280px;display:flex;flex-direction:column;">
+        <h2 style="font-size:clamp(2rem,4.2vw,3.5rem);font-weight:600;line-height:1;letter-spacing:-0.035em;max-width:18ch;margin-bottom:20px;">Construyamos algo que importe.</h2>
+        <p style="font-size:clamp(1.125rem,1.4vw,1.25rem);line-height:1.45;color:#AAA6A0;max-width:44ch;margin-bottom:clamp(32px,4vw,48px);">Si tienes un problema interesante, una comunidad que hacer crecer o un sistema que todavía no existe, hablemos.</p>
+
+        <div style="display:flex;flex-direction:column;margin-top:auto;">
+          <a href="https://github.com/itsebasvz" target="_blank" rel="noopener" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:20px 18px;border-top:1px solid rgba(113,116,122,0.3);border-left:2px solid transparent;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1),border-left 180ms cubic-bezier(0.22,1,0.36,1),background 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A;border-left:2px solid #FF761A;background:#0E1410">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">GitHub</span>
+            <span style="font-size:clamp(1.125rem,1.6vw,1.5rem);font-weight:560;letter-spacing:-0.015em;">itsebasvz ↗</span>
+          </a>
+          <a href="https://www.linkedin.com/in/jsebastianvz" target="_blank" rel="noopener" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:20px 18px;border-top:1px solid rgba(113,116,122,0.3);border-left:2px solid transparent;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1),border-left 180ms cubic-bezier(0.22,1,0.36,1),background 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A;border-left:2px solid #FF761A;background:#0E1410">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">LinkedIn</span>
+            <span style="font-size:clamp(1.125rem,1.6vw,1.5rem);font-weight:560;letter-spacing:-0.015em;">jsebastianvz ↗</span>
+          </a>
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:20px 18px;border-top:1px solid rgba(113,116,122,0.3);border-bottom:1px solid rgba(113,116,122,0.3);border-left:2px solid rgba(91,140,255,0.5);">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;">Correo</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#5B8CFF;">Por definir · pendiente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer data-screen-label="Pie" style="background:#0A100B;border-top:1px solid rgba(113,116,122,0.3);padding:clamp(48px,7vh,80px) clamp(20px,3.4vw,40px) clamp(28px,3.4vh,40px);">
+  <div style="max-width:1600px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(32px,4vw,64px);margin-bottom:clamp(40px,5vw,64px);">
+
+      <div style="display:flex;flex-direction:column;">
+        <a href="#entrada" style="display:inline-flex;align-items:center;gap:10px;color:#F0EDE6;margin-bottom:18px;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A">
+          <span style="width:2px;height:20px;flex:0 0 auto;background:#FF761A;"></span>
+          <span style="font-size:1.125rem;font-weight:620;letter-spacing:-0.03em;">Sebastián Vázquez</span>
+        </a>
+        <p style="font-size:clamp(1.375rem,2.2vw,1.875rem);font-weight:600;line-height:1.1;letter-spacing:-0.03em;max-width:14ch;margin-bottom:16px;">De señales a sistemas.</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;line-height:1.7;">Ingeniería creativa<br />Ciudad de México</p>
+      </div>
+
+      <nav style="display:flex;flex-direction:column;">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:14px;">Índice</p>
+        <a href="#entrada" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">01</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Entrada</span></a>
+        <a href="#senales" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">02</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Campo de señales</span></a>
+        <a href="#interfaz" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">03</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">De señal a interfaz</span></a>
+        <a href="#trabajo" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">04</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Trabajo seleccionado</span></a>
+      </nav>
+
+      <nav style="display:flex;flex-direction:column;">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:14px;" aria-hidden="true">&nbsp;</p>
+        <a href="#ciudad" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">05</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Ciudad y ecosistema</span></a>
+        <a href="#evidencia" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">06</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Evidencia</span></a>
+        <a href="#salida" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">07</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Salida</span></a>
+        <a href="#contacto" style="display:flex;align-items:baseline;gap:12px;padding:7px 0;color:#F0EDE6;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;color:#71747A;">08</span><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">Contacto</span></a>
+      </nav>
+
+      <div style="display:flex;flex-direction:column;">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;margin-bottom:14px;">Colofón</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 0;border-top:1px solid rgba(113,116,122,0.24);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Tipografía</span><span style="font-size:0.875rem;font-weight:560;letter-spacing:-0.01em;color:#AAA6A0;text-align:right;">Instrument Sans · JetBrains Mono</span></div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 0;border-top:1px solid rgba(113,116,122,0.24);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Stack</span><span style="font-size:0.875rem;font-weight:560;letter-spacing:-0.01em;color:#AAA6A0;text-align:right;">Astro · TypeScript · GSAP</span></div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 0;border-top:1px solid rgba(113,116,122,0.24);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">Infraestructura</span><span style="font-size:0.875rem;font-weight:560;letter-spacing:-0.01em;color:#AAA6A0;text-align:right;">Cloudflare Workers</span></div>
+      </div>
+
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:clamp(20px,2.6vw,28px);border-top:1px solid rgba(113,116,122,0.24);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:clamp(12px,2vw,24px);">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;display:inline-flex;align-items:center;gap:7px;"><span style="width:5px;height:5px;border-radius:9999px;background:#FF761A;"></span>CDMX <span style="color:#AAA6A0;">{{ cdmxTime }}</span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;">© 2026</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:clamp(12px,2vw,24px);">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px;"><span style="color:#FF761A;">ES</span><span style="color:#71747A;">/</span><span style="color:#71747A;">EN</span></span>
+        <a href="#entrada" style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#AAA6A0;transition:color 180ms cubic-bezier(0.22,1,0.36,1);" style-hover="color:#FF761A">Volver arriba ↑</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<sc-if value="{{ showAppendix }}" hint-placeholder-val="{{ true }}">
+<section id="apendice" data-screen-label="Apéndice técnico" style="background:#111214;border-top:1px solid rgba(113,116,122,0.34);padding:clamp(64px,9vh,120px) clamp(20px,3.4vw,40px) clamp(80px,10vh,128px);">
+  <div style="max-width:1600px;margin:0 auto;">
+
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:clamp(28px,3.4vw,40px);border-bottom:1px solid rgba(113,116,122,0.34);margin-bottom:clamp(48px,6vw,80px);">
+      <div>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#FF761A;margin-bottom:14px;">Apéndice · Referencia de implementación</p>
+        <h2 style="font-size:clamp(1.75rem,3.4vw,2.25rem);font-weight:580;line-height:1.05;letter-spacing:-0.025em;max-width:28ch;">Lo que esta página fija para el desarrollo</h2>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;max-width:34ch;line-height:1.6;">No forma parte del sitio público. Esta página es la referencia maestra de diseño, no el producto: fija los estados finales para que la implementación en Astro no tenga que interpretar adjetivos. Paquete completo en design_handoff_portfolio/.</p>
+    </div>
+
+    <div style="margin-bottom:clamp(48px,6vw,80px);">
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">01 · Color</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);">
+        <div style="background:#17181B;"><div style="height:64px;background:#090A0B;border-bottom:1px solid rgba(113,116,122,0.24);"></div><div style="padding:14px 16px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">void</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-top:4px;">#090A0B · lienzo</span></div></div>
+        <div style="background:#17181B;"><div style="height:64px;background:#F0EDE6;border-bottom:1px solid rgba(113,116,122,0.24);"></div><div style="padding:14px 16px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">paper</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-top:4px;">#F0EDE6 · texto</span></div></div>
+        <div style="background:#17181B;"><div style="height:64px;background:#FF761A;border-bottom:1px solid rgba(113,116,122,0.24);"></div><div style="padding:14px 16px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">signal</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-top:4px;">#FF761A · acento 4%</span></div></div>
+        <div style="background:#17181B;"><div style="height:64px;background:#5B8CFF;border-bottom:1px solid rgba(113,116,122,0.24);"></div><div style="padding:14px 16px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">electric</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-top:4px;">#5B8CFF · sistema 1%</span></div></div>
+        <div style="background:#17181B;"><div style="height:64px;background:#AAA6A0;border-bottom:1px solid rgba(113,116,122,0.24);"></div><div style="padding:14px 16px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">ash</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-top:4px;">#AAA6A0 · secundario</span></div></div>
+        <div style="background:#17181B;"><div style="height:64px;background:#71747A;border-bottom:1px solid rgba(113,116,122,0.24);"></div><div style="padding:14px 16px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;">graphite</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-top:4px;">#71747A · reglas</span></div></div>
+      </div>
+      <p style="margin-top:20px;font-size:0.875rem;line-height:1.6;color:#AAA6A0;max-width:74ch;">Atmósferas por escena, aplicadas como <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">linear-gradient</span> en el borde superior de cada sección para que el cambio no tenga corte visible: <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">#0C0B0D → #12090C → #090A0B → #080D17 → #091114 → #0A100B</span>. En producción conviene moverlas a una variable CSS por escena e interpolarlas con GSAP, como indica ARCHITECTURE §10.</p>
+    </div>
+
+    <div style="margin-bottom:clamp(48px,6vw,80px);">
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">02 · Tipografía</h3>
+      <div style="display:flex;flex-direction:column;">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding:20px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <span style="font-size:clamp(2rem,4vw,3.75rem);font-weight:650;line-height:1;letter-spacing:-0.055em;">De señales a sistemas</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;">display-xl · clamp(3rem,7.6vw,6rem) / 0.92 / -0.055em / 650</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding:20px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <span style="font-size:clamp(1.75rem,3vw,2.75rem);font-weight:620;line-height:1;letter-spacing:-0.045em;">Sistemas en el mundo real</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;">display-lg · clamp(2.25rem,5vw,4.5rem) / 0.96 / -0.045em / 620</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding:20px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <span style="font-size:clamp(1.5rem,2.4vw,2rem);font-weight:600;line-height:1;letter-spacing:-0.035em;">HackODS</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;">headline-lg · 3.5rem / 1 / -0.035em / 600</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding:20px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <span style="font-size:1.25rem;line-height:1.45;letter-spacing:-0.01em;max-width:40ch;">Convierto ideas, datos y comunidades en productos que funcionan.</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;">body-lg · clamp(1.125rem,1.4vw,1.25rem) / 1.45</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding:20px 0;border-top:1px solid rgba(113,116,122,0.26);border-bottom:1px solid rgba(113,116,122,0.26);">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;">Leer · Construir · Conectar · Abrir · Lanzar</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;">label-lg · 0.75rem / 0.1em / mayúsculas</span>
+        </div>
+      </div>
+      <p style="margin-top:20px;font-size:0.875rem;line-height:1.6;color:#AAA6A0;max-width:74ch;">Dos familias, no tres. Instrument Sans para todo lo que se lee; JetBrains Mono solo para metadata. Aquí se cargan desde Google Fonts para prototipar: en producción van autoalojadas en WOFF2. El eje <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">wdth 92–94</span> que pide DESIGN.md queda pendiente de validar en el archivo variable.</p>
+    </div>
+
+    <div style="margin-bottom:clamp(48px,6vw,80px);">
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">03 · Fotografía — decisiones tomadas</h3>
+      <p style="font-size:1rem;line-height:1.6;color:#F0EDE6;max-width:74ch;margin-bottom:28px;">Todas las fotos del inventario son verticales 3:4 de 1440px de ancho. Ese es el dato que gobierna la composición: usadas a pantalla completa en horizontal se escalan más allá de su resolución y pierden su relación de aspecto. Aquí <strong style="font-weight:620;">ninguna foto es fondo full-bleed</strong>; cada una vive en una placa a su proporción nativa, con un ancho máximo que nunca supera su resolución real.</p>
+      <div style="display:flex;flex-direction:column;">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:14px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#F0EDE6;flex:1 1 200px;">05 · signal-wall</span><span style="font-size:0.875rem;color:#AAA6A0;flex:2 1 320px;">Placa de entrada, 3:4, máx. 440px. Sin recorte.</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:14px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#F0EDE6;flex:1 1 200px;">08 · recorte nuevo</span><span style="font-size:0.875rem;color:#AAA6A0;flex:2 1 320px;">Se recortó el tercio izquierdo: contenía una palabra altisonante pintada. El derivado <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;">signal-wall-08-crop.jpg</span> conserva 3:4.</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:14px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#F0EDE6;flex:1 1 200px;">09 · signal-wall</span><span style="font-size:0.875rem;color:#AAA6A0;flex:2 1 320px;">Foto completa a 3:4 por decisión de Sebastián. Nota: incluye un sticker con lenguaje altisonante en la zona inferior izquierda — si algún día molesta, el derivado recortado <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;">signal-wall-09-crop.jpg</span> ya existe.</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:14px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#F0EDE6;flex:1 1 200px;">14 · recorte nuevo</span><span style="font-size:0.875rem;color:#AAA6A0;flex:2 1 320px;">Recorte de densidad para ganar nitidez a tamaño de placa.</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:14px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#F0EDE6;flex:1 1 200px;">16 / 20 / 19</span><span style="font-size:0.875rem;color:#AAA6A0;flex:2 1 320px;">Ciudad, salida y firma. Placas verticales a proporción nativa (19 es 2:3).</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:14px 0;border-top:1px solid rgba(113,116,122,0.26);border-bottom:1px solid rgba(113,116,122,0.26);"><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#FF761A;flex:1 1 200px;">Fotos retiradas</span><span style="font-size:0.875rem;color:#AAA6A0;flex:2 1 320px;">Los originales completos de 08 y 09 y las opcionales 06, 07, 15, 17, 18. Diez imágenes en total contra las veinte del plan: el arco se lee mejor sin relleno.</span></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:clamp(48px,6vw,80px);">
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">04 · Capturas de producto</h3>
+      <p style="font-size:1rem;line-height:1.6;color:#F0EDE6;max-width:74ch;margin-bottom:24px;">Todas las capturas son interfaces claras sobre una página oscura. En vez de sangrarlas o teñirlas, van dentro de un marco <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;">#17181B</span> con una barra de chrome de 1px que actúa de aislante. Cada <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;">aspect-ratio</span> es la relación exacta del archivo, así que no hay deformación ni recorte accidental:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:rgba(113,116,122,0.24);border:1px solid rgba(113,116,122,0.24);">
+        <div style="background:#17181B;padding:16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-bottom:6px;">Duet</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">1917/1079 · 1918/1079</span></div>
+        <div style="background:#17181B;padding:16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-bottom:6px;">World Cup</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">1440/1000 · 390/844</span></div>
+        <div style="background:#17181B;padding:16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-bottom:6px;">Hello World</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">1440/900 · 1100/650</span></div>
+        <div style="background:#17181B;padding:16px;"><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.06em;color:#71747A;margin-bottom:6px;">HackODS</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">1440/900 · 1440/1050</span></div>
+      </div>
+      <p style="margin-top:20px;font-size:0.875rem;line-height:1.6;color:#AAA6A0;max-width:74ch;">Gramática por caso: una captura dominante + una de apoyo desplazada. Nunca tres. El teléfono de World Cup es la única pieza con radio de 8px, porque representa un dispositivo.</p>
+    </div>
+
+    <div style="margin-bottom:clamp(48px,6vw,80px);">
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">05 · Retícula y forma</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(24px,3vw,40px);">
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;margin-bottom:12px;">Retícula</p>
+          <p style="font-size:0.875rem;line-height:1.65;color:#AAA6A0;">Contenido máx. 1600px. Gutters 40 / 32 / 20px vía <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">clamp</span>. Base de 4px. Separación de escena 96–152px. En Astro esto pasa a 12 / 6 / 4 columnas reales; aquí las divisiones son <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">flex-basis</span> para que colapsen sin media queries.</p>
+        </div>
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;margin-bottom:12px;">Forma</p>
+          <p style="font-size:0.875rem;line-height:1.65;color:#AAA6A0;">Radio 0 en escenas, placas fotográficas y paneles. 2px en etiquetas y módulos. 4px en botones. Pill solo en estado. 8px únicamente en el teléfono. Sin glass, sin glow, sin sombras múltiples: la profundidad viene del tono.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:clamp(48px,6vw,80px);">
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">06 · Motion — mapa a GSAP</h3>
+      <p style="font-size:1rem;line-height:1.6;color:#F0EDE6;max-width:74ch;margin-bottom:14px;">Esta página corre con IntersectionObserver y transiciones CSS, no con GSAP. Fija los <strong style="font-weight:620;">estados finales</strong>; la tabla traduce cada escena a ScrollTrigger con valores concretos para que la implementación no improvise. Todo lo de abajo es transform y opacity: ninguna animación toca layout.</p>
+      <p style="font-size:0.875rem;line-height:1.6;color:#AAA6A0;max-width:74ch;margin-bottom:26px;">Regla que manda sobre la tabla: si una escena se ve bien sin su animación, se queda sin ella.</p>
+      <div style="background:#0C0B0D;border:1px solid rgba(113,116,122,0.24);padding:clamp(16px,2vw,22px);margin-bottom:clamp(28px,3.4vw,40px);font-family:'JetBrains Mono',monospace;font-size:0.8125rem;line-height:1.75;color:#F0EDE6;white-space:pre-wrap;overflow-x:auto;">gsap.registerPlugin(ScrollTrigger, CustomEase);
+CustomEase.create("signal", "0.22, 1, 0.36, 1");   // curva única del sitio
+gsap.defaults({ ease: "signal", duration: 0.9 });
+ScrollTrigger.config({ ignoreMobileResize: true });</div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">01 · Entrada</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">Timeline · sin scroll</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;">Corre al cargar, no por scroll. Secuencia eyebrow → h1 → propuesta → botones con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">stagger 0.08</span> y <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 22</span>. La foto entra aparte: <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scale 1.04 → 1</span> en <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">1.4s</span>. Total ~<span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">1.2s</span>, dentro del rango de CONCEPT §6. El h1 nunca arranca oculto en el HTML.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">02 · Campo de señales</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">once · sin pin</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;">Trigger en la retícula de verbos. <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 78%"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">once: true</span>. Las cinco tarjetas entran con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">stagger: 0.07</span> y <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 24</span>. El pin que pedía CONCEPT §6 se descarta (ver diferidos).</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">03 · Señal a interfaz</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">scrub · la clave</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;">La única escena que justifica scrub, porque el movimiento <em>es</em> la tesis. Trigger en la fila completa: <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 72%"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">end: "top 28%"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scrub: 0.6</span>. El panel de componentes va de <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">rotate: 1.5 → 0</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 40 → 0</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">opacity: 0.35 → 1</span>: lo torcido se endereza al grid. La foto acompaña con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: -20</span>. Sin pin.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">04 · Trabajo seleccionado</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">por caso · once</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;">Un ScrollTrigger por <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">&lt;article&gt;</span>, no uno global. <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 75%"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">once: true</span>. Columna de texto con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">stagger: 0.06</span>; la captura dominante entra con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 32</span> y <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">delay: 0.12</span>. La imagen de apoyo lleva parallax propio — <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 40 → -10</span> con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scrub: 1</span> — y es lo que produce el traslape en movimiento. Sin pin.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">05 · Ciudad</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">once + scrub leve</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 78%"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">once</span> para las filas de datos (<span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">stagger: 0.06</span>). La foto lleva <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scale 1.03 → 1</span> con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scrub: 1</span> — suficiente para que la ciudad respire sin desenfocar el texto.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">06 · Evidencia</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">banda · once</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 80%"</span>. Las cuatro placas entran con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">stagger: 0.09</span> y <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 28</span>, de izquierda a derecha. Sin scroll horizontal (ver diferidos).</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">07 · Salida</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">once</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 78%"</span>. Foto con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 36</span>, titular con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">y: 24</span> y <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">delay: 0.1</span>. Es una escena de respiración: nada más se mueve.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">08 · Contacto</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">once</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top 80%"</span>. Titular y filas de contacto con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">stagger: 0.05</span>. El hover de cada fila queda en CSS a <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">180ms</span>, no en GSAP.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">Barra de progreso</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">scrub global</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;">ScrollTrigger sobre <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">document.body</span>: <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">start: "top top"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">end: "bottom bottom"</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scrub: true</span>, animando <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">scaleX: 0 → 1</span> con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">transformOrigin: "left"</span>. Es el único scrub que corre a lo largo de toda la página.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,2vw,28px);padding:18px 0;border-top:1px solid rgba(113,116,122,0.26);border-bottom:1px solid rgba(113,116,122,0.26);">
+          <div style="flex:1 1 180px;min-width:165px;"><span style="display:block;font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;margin-bottom:5px;">Hover e interacción</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;">CSS, no GSAP</span></div>
+          <div style="flex:3.2 1 380px;min-width:270px;font-size:0.875rem;line-height:1.7;color:#AAA6A0;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">180ms</span> con la misma curva, sobre <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">background</span>, <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">border-color</span> y <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">color</span>. Vive en CSS para que funcione sin JS y no compita con el scroll.</div>
+        </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(24px,3vw,40px);margin-top:clamp(32px,4vw,44px);">
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;margin-bottom:12px;">Contrato de reduced-motion</p>
+          <p style="font-size:0.875rem;line-height:1.65;color:#AAA6A0;">Un solo check al arrancar: si <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">prefers-reduced-motion</span> está activo no se registra ningún ScrollTrigger. El contenido nace visible en el HTML y los from-states los aplica GSAP en runtime con <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">gsap.from()</span>, nunca CSS estático — así el sitio sin JS se ve completo. En <span style="font-family:'JetBrains Mono',monospace;font-size:0.8125rem;color:#F0EDE6;">beforeprint</span>, matar los triggers y saltar a estados finales. Mismas escenas, mismas fotos, mismo orden: se pierde el movimiento, no el contenido.</p>
+        </div>
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;margin-bottom:12px;">Descartado a propósito</p>
+          <p style="font-size:0.875rem;line-height:1.65;color:#AAA6A0;">Pin en escenas 2 y 4 (CONCEPT §6): los casos son altos, pinnearlos alarga el scroll y en móvil se siente atorado. Scroll horizontal en evidencia (CONCEPT §4): cuatro placas caben en una banda y el horizontal secuestra el gesto. Smooth scroll tipo Lenis: pelea con el scroll nativo en móvil. Si se retoman, uno a la vez y medido en un dispositivo real — el fallo anterior fue exceso de animación mal integrada, no falta de ideas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#AAA6A0;margin-bottom:24px;">07 · Pendientes reales</h3>
+      <div style="display:flex;flex-direction:column;">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;flex:1 1 260px;">Correo de contacto</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#5B8CFF;flex:0 0 auto;">Bloquea el cierre</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;flex:1 1 260px;">URLs de repositorio por proyecto (hoy apuntan al perfil)</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#5B8CFF;flex:0 0 auto;">Bloquea salidas</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;flex:1 1 260px;">musync: material visual — queda en draft, fuera de la home</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;flex:0 0 auto;">Decidido</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;flex:1 1 260px;">Caption de Austria: COPY.md dice «ÖBB · Best Data Visualization», la foto muestra constancias de participación en Mobility &amp; AI</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#FF761A;flex:0 0 auto;">Verificar</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);"><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;flex:1 1 260px;">Traducción EN de esta jerarquía (el copy ya existe en COPY.md)</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;flex:0 0 auto;">Listo para aplicar</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(113,116,122,0.26);border-bottom:1px solid rgba(113,116,122,0.26);"><span style="font-size:0.9375rem;font-weight:560;letter-spacing:-0.015em;flex:1 1 260px;">Sello: barra de señal de 2px + nombre en Instrument Sans. La barra sale del rótulo vertical del hero, no es un símbolo nuevo. Favicon: dos barras, sin monograma.</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;letter-spacing:0.08em;text-transform:uppercase;color:#71747A;flex:0 0 auto;">Decidido</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showAppendix&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Referencia&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;reveals&quot;,&quot;off&quot;],&quot;default&quot;:&quot;reveals&quot;,&quot;tsType&quot;:&quot;\&quot;reveals\&quot; | \&quot;off\&quot;&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.rootRef = React.createRef();
+    this.barRef = React.createRef();
+    this.pending = [];
+    this.onScroll = this.onScroll.bind(this);
+    this.revealAll = this.revealAll.bind(this);
+  }
+
+  show(el) {
+    el.style.opacity = "1";
+    el.style.transform = "none";
+    if (this.io) this.io.unobserve(el);
+  }
+
+  sweep() {
+    if (!this.pending.length) return;
+    const limit = window.innerHeight * 0.94;
+    this.pending = this.pending.filter((el) => {
+      if (el.getBoundingClientRect().top > limit) return true;
+      this.show(el);
+      return false;
+    });
+  }
+
+  revealAll() {
+    this.pending.forEach((el) => this.show(el));
+    this.pending = [];
+  }
+
+  onScroll() {
+    const bar = this.barRef.current;
+    if (bar) {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      bar.style.width = (p * 100).toFixed(2) + "%";
+    }
+    this.sweep();
+  }
+
+  componentDidMount() {
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    window.addEventListener("resize", this.onScroll);
+    window.addEventListener("beforeprint", this.revealAll);
+    this.onScroll();
+
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || (this.props.motion ?? "reveals") === "off") return;
+
+    const root = this.rootRef.current;
+    if (!root) return;
+
+    // Content ships visible. Only elements still well below the fold get a
+    // from-state, so nothing is ever hidden waiting on a script.
+    const ease = "cubic-bezier(0.22,1,0.36,1)";
+    const candidates = [];
+    root.querySelectorAll("[data-reveal]").forEach((el) => {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.94) return;
+      el.style.opacity = "0";
+      el.style.transform = "translateY(22px)";
+      el.style.transition = "opacity 900ms " + ease + ", transform 900ms " + ease;
+      el.style.willChange = "opacity, transform";
+      candidates.push(el);
+    });
+    this.pending = candidates;
+
+    if ("IntersectionObserver" in window) {
+      this.io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          this.show(entry.target);
+          this.pending = this.pending.filter((el) => el !== entry.target);
+        });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+      candidates.forEach((el) => this.io.observe(el));
+    }
+
+    // Belt and braces: if neither the observer nor scroll ever fires
+    // (snapshots, print, embedded contexts), nothing stays invisible.
+    this.fallback = window.setTimeout(this.revealAll, 6000);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("resize", this.onScroll);
+    window.removeEventListener("beforeprint", this.revealAll);
+    if (this.io) this.io.disconnect();
+    if (this.fallback) window.clearTimeout(this.fallback);
+  }
+
+  cdmxNow() {
+    try {
+      return new Intl.DateTimeFormat("es-MX", { timeZone: "America/Mexico_City", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+    } catch (e) { return ""; }
+  }
+
+  renderVals() {
+    return {
+      rootRef: this.rootRef,
+      barRef: this.barRef,
+      cdmxTime: this.state.cdmxTime || this.cdmxNow(),
+      showAppendix: this.props.showAppendix ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>
