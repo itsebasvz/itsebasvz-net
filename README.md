@@ -26,8 +26,8 @@ implemented yet.
 | Content model and copy dictionaries | Built |
 | Scroll motion (signal field) | Built |
 | Interactive hero (fox and ball) | Built |
+| Playwright suite | Built — routing, accessibility, progressive enhancement |
 | `/work/[slug]/` case routes | Specified, not implemented |
-| Playwright suite | Specified, not implemented |
 | Cloudflare deploy | Configured, not yet deployed |
 
 ## What this portfolio is
@@ -92,7 +92,7 @@ being on the home page, and only `ready` projects get a public case route.
 | Media | `astro:assets` with responsive output |
 | Languages | Spanish default, English equivalent |
 | Hosting | Cloudflare Workers static assets |
-| Testing | Astro check and build validation; Playwright once routes land |
+| Testing | Prettier, ESLint, Stylelint, Astro check, and Playwright with axe |
 
 No React, Tailwind, Sass, CSS-in-JS, CMS, database, authentication, contact
 form, or application backend is planned for v1.
@@ -133,10 +133,23 @@ privacy. `src/styles/tokens.css` holds the canonical scale.
 │   ├── pages/                  / and /en/
 │   ├── scripts/                motion and WebGL, all deferred
 │   └── styles/                 cascade layers and tokens
+├── scripts/                    cross-file content validation
+├── tests/e2e/                  routing, accessibility, progressive enhancement
 ├── AGENTS.md
 ├── CLAUDE.md
-└── astro.config.mjs
+├── astro.config.mjs
+└── wrangler.jsonc
 ```
+
+## Known issues
+
+`--color-graphite` (`#71747a`) falls short of WCAG AA contrast on the small mono
+labels: it measures between 3.79 and 4.23 to 1 against the four backgrounds it
+lands on, where AA wants 4.5 for text that size, across 27 elements. `#7e8187`
+is the smallest lightening that clears all four. It is a token from the design
+handoff, so the change is a design decision rather than a bug fix, and it is
+recorded as a `test.fixme` in `tests/e2e/accessibility.spec.ts` so it stays
+visible in the test report until it is settled.
 
 ## Local development
 
@@ -159,11 +172,19 @@ Astro serves the local site at `http://localhost:4321`.
 | Command | Purpose |
 |---|---|
 | `npm run dev` | Start the local Astro development server |
-| `npm run check` | Validate Astro components, TypeScript, and the content schema |
+| `npm run check` | Formatting, lint, content invariants, and types |
 | `npm run build` | Generate the static production output |
 | `npm run preview` | Preview the production build locally |
+| `npm run test:e2e` | Routing, accessibility, and progressive enhancement, against the build |
+| `npm run format` | Rewrite formatting in place |
 
 `npm run check` and `npm run build` are the gate before handing off any change.
+CI runs both plus the browser suite.
+
+`npm run content:check` covers what the content schema structurally cannot: the
+invariants that span two files, like a slug disagreeing with its filename, two
+projects sharing an `order`, or a media id declared in one registry and missing
+from the other.
 
 ## Development principles
 
