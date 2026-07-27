@@ -1,0 +1,384 @@
+---
+/**
+ * The hero's fox. It owns nothing but its canvas: where it walks is decided by
+ * the ball, which reports every floor impact through the shared stage module.
+ *
+ * The fox is decorative — the ball's button is the interactive part of the
+ * scene, and it lives in its own component.
+ */
+---
+
+<div class="dithered-fox" data-dithered-fox aria-hidden="true">
+  <canvas class="dithered-fox__canvas" data-dithered-fox-canvas></canvas>
+</div>
+
+<script>
+  import type { DitheredObjectInstance } from "../../scripts/dithered-object";
+  import {
+    CAMERA_DISTANCE,
+    FOX_FRAME_HEIGHT,
+    markFoxReady,
+    onBall
+  } from "../../scripts/hero-stage";
+
+  const mount = document.querySelector<HTMLElement>("[data-dithered-fox]");
+  const canvas = mount?.querySelector<HTMLCanvasElement>("[data-dithered-fox-canvas]");
+  /** The fox rests under the primary action. */
+  const homeRef = document.querySelector<HTMLElement>("[data-fox-home]");
+
+  if (mount && canvas && homeRef) {
+    // Must match the breakpoint that reveals the fox in SignalHero: booting
+    // against a display:none canvas would size the renderer to 0.
+    const desktop = window.matchMedia("(min-width: 1000px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = Boolean(
+      (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+    );
+
+    /** Travel speed while walking. One constant matching stride to ground. */
+    const WALK_SPEED = 1.72;
+    /**
+     * Where the fox comes to rest relative to the ball, centre to centre.
+     *
+     * The nose leads the fox's centre by ~1.28 — the animal reads about 2.6
+     * units long and its long axis projects onto x by sin(yaw) — and the ball's
+     * radius takes 0.475 more, so anything under 1.76 puts the ball inside the
+     * front legs. The remaining 0.62 is deliberate air: the fox is meant to
+     * arrive next to the ball, not on top of it, and it has no animation for
+     * picking it up.
+     *
+     * Follows the ball's radius. The tennis ball is smaller than the football
+     * was, so this came down with it to hold the same gap on screen.
+     */
+    const REACH = 2.375;
+    /** Below this change in destination a new report is not worth acting on. */
+    const RETARGET_EPSILON = 0.5;
+    /** And not more often than this, in ms. */
+    const RETARGET_THROTTLE = 250;
+    /**
+     * The beat between the ball leaving the hand and the fox setting off,
+     * jittered. Reacting on the same frame as the throw is the single thing
+     * that most makes an animal read as a machine.
+     */
+    const REACTION_MIN = 130;
+    const REACTION_SPREAD = 190;
+    /**
+     * How far past the fox a carried ball has to travel before it turns to
+     * follow. Without a deadband, dragging over its head flips it back and
+     * forth.
+     */
+    const FACE_DEADBAND = 1.1;
+    /**
+     * A ball landing this close, this fast, startles it into backing off.
+     *
+     * Deliberately rare. The fox has no reverse gait, so a retreat costs a
+     * pivot away and a pivot back — right for a genuine near miss, fussy for
+     * anything less. A throw bounces eight times before it stops, and this
+     * should fire on approximately none of them.
+     */
+    const STARTLE_RANGE = 1.4;
+    const STARTLE_SPEED = 11;
+    /** How far it retreats when startled. */
+    const STARTLE_STEP = 0.7;
+
+    /**
+     * Scene units per CSS pixel. Duplicated from the instance because the home
+     * position has to be known before there is an instance to ask.
+     */
+    function unitsPerPixel() {
+      return FOX_FRAME_HEIGHT / Math.max(canvas!.clientHeight, 1);
+    }
+
+    /**
+     * Viewport x to scene x. Exact: the projection is orthographic and the
+     * camera has no roll, so world x maps to canvas x by a plain scale.
+     */
+    function sceneXFrom(clientX: number) {
+      const box = canvas!.getBoundingClientRect();
+      return (clientX - box.left - box.width / 2) * unitsPerPixel();
+    }
+
+    /**
+     * Anchored to the button rather than to a fraction of the canvas, because
+     * the canvas now bleeds past the text column on both sides and a percentage
+     * of it no longer points anywhere in particular.
+     */
+    function homeScene() {
+      const ref = homeRef!.getBoundingClientRect();
+      return sceneXFrom(ref.left + ref.width / 2);
+    }
+
+    let instance: DitheredObjectInstance | null = null;
+    let booting = false;
+    /** The walk-in is a real move; retargeting it would abandon the entrance. */
+    let ready = false;
+    let lastTarget = Number.NaN;
+    let lastSent = 0;
+
+    const whenIdle = (run: () => void) => {
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(run, { timeout: 2000 });
+        return;
+      }
+      window.setTimeout(run, 400);
+    };
+
+    async function boot() {
+      if (instance || booting || saveData || !desktop.matches) return;
+      booting = true;
+      const homeX = homeScene();
+      const { createDitheredObject } = await import("../../scripts/dithered-object");
+      instance = createDitheredObject(canvas!, {
+        src: "/models/fox.glb",
+        method: "bayer",
+        gridSize: 3,
+        // Brand ramp. The shadow stop stays an orange, not a red-brown: the
+        // fox's average luminance lands low, so a dark stop dominates the read
+        // and toneGain has to push the body up onto --color-signal.
+        // Wide range on purpose: the spread between the stops is what reads as
+        // form. --color-signal moves to the highlight so the brand orange lands
+        // on the lit edge, and the body sits on a deeper burnt orange instead
+        // of the yellow-leaning signal tone.
+        tint: ["#3f1605", "#c9530c", "#ff761a"],
+        toneGain: 0.95,
+        // Opens the screen up so the dot gradient runs across the whole body,
+        // not just the darkest corners. This is what reads as volume.
+        ditherGain: 1.45,
+        // Left edge only, at the width that was already tuned. The walk-in
+        // comes from off-frame on that side and needs the feather; the right
+        // edge is where the fox chases the ball, and a fade there just
+        // dissolves its head as it goes.
+        // The canvas now also bleeds a rail-gap further left, so the resting
+        // tail clears this band by more than it used to.
+        edgeFade: [0.06, 0],
+        highlight: "#ff761a",
+        // Volume has to come from shading: an orthographic camera gives no
+        // foreshortening, so a brighter environment and a tighter specular are
+        // what separate the lit side from the shadow side.
+        environmentIntensity: 0.26,
+        roughness: 0.22,
+        // Sized so the animated pose fills roughly four fifths of the box
+        // height. The bind-pose bounding box the fit uses is longer than the
+        // posed fox, which is why this reads high for a 4.2-unit camera.
+        // Headroom matters: the fit is measured on the bind pose, and Survey
+        // lifts the head and ears above it.
+        scale: 5,
+        // Cancels the renderer's built-in lift, which otherwise spends the top
+        // margin the raised head needs.
+        yOffset: -0.35,
+        // Rests left of centre to leave the arena its room.
+        xOffset: homeX,
+        cameraDistance: CAMERA_DISTANCE,
+        frameHeight: FOX_FRAME_HEIGHT,
+        // The model faces +Z. A positive yaw turns it to a near profile looking
+        // right, into the page, rather than off the bottom-left corner.
+        yaw: 1.2,
+        // Trots in from the left, then settles into the idle. `Walk` is a 0.7s
+        // cycle, and walkSpeed is the one constant matching stride to ground.
+        clip: "Survey",
+        clipSpeed: 0.3,
+        restHold: 5,
+        entryClip: "Walk",
+        entryClipSpeed: 0.85,
+        walkSpeed: WALK_SPEED,
+        entryTravel: 3.5,
+        // Both gaits are ground-locked, so the run needs its own travel speed
+        // or the stride slides. `Run` is a 1.158s cycle against Walk's 0.708s.
+        runClip: "Run",
+        runClipSpeed: 1.35,
+        runSpeed: 3.6,
+        runThreshold: 3.2,
+        // The ball can land on either side now, so the fox has to be able to
+        // face left. This is a real rotation of the yaw, never a mirror.
+        turnDuration: 0.4,
+        clipFade: 0.7,
+        // No bob: the fox stands on ground, it does not hover.
+        floatIntensity: 0,
+        rotationIntensity: 0.5,
+        orbit: false,
+        zoom: false,
+        onLoad: () => {
+          mount!.dataset.state = "ready";
+          // Reduced motion skips the walk-in entirely, so there is no arrival
+          // to wait for and the stage is live immediately.
+          if (reducedMotion.matches) markFoxReady();
+        },
+        onIdle: () => {
+          if (ready) return;
+          ready = true;
+          markFoxReady();
+        },
+        onError: () => {
+          mount!.dataset.state = "failed";
+          // The ball's entrance is gated on this signal; a missing fox should
+          // not take the ball down with it.
+          markFoxReady();
+        }
+      });
+      if (!instance) {
+        mount!.dataset.state = "failed";
+        markFoxReady();
+      }
+      booting = false;
+    }
+
+    /** Viewport pixels to this canvas's scene space. */
+    function toScene(clientX: number) {
+      const box = canvas!.getBoundingClientRect();
+      return instance!.toScene({ x: clientX - box.left, y: box.height / 2 }).x;
+    }
+
+    /** Where the fox thinks the ball will end up. Refined on every report. */
+    let aim = Number.NaN;
+    let reactTimer = 0;
+    /** One startle per throw, or a ball rattling nearby turns into a panic. */
+    let startled = false;
+    /** While a flinch plays out, reports refine the aim but do not override it. */
+    let startleUntil = 0;
+
+    const beat = () => REACTION_MIN + Math.random() * REACTION_SPREAD;
+
+    /** Turns to look at something without walking to it. */
+    function watch(ballX: number) {
+      const gap = ballX - instance!.positionX();
+      if (Math.abs(gap) < FACE_DEADBAND) return;
+      instance!.face(Math.sign(gap));
+    }
+
+    /** Commits to the current aim: walks if it needs to, otherwise just looks. */
+    function pursue() {
+      if (!instance || Number.isNaN(aim)) return;
+      // Mid-flinch. The aim is still being kept up to date; acting on it here
+      // would cancel the recoil the moment the ball bounced again.
+      if (performance.now() < startleUntil) return;
+      const gap = aim - instance.positionX();
+
+      // Already within nose range. Backing up to hold an exact distance would
+      // look like the fox is afraid of the ball — but it should still turn and
+      // face what just went past it.
+      if (Math.abs(gap) <= REACH) {
+        watch(aim);
+        return;
+      }
+
+      const target = aim - Math.sign(gap) * REACH;
+      const now = performance.now();
+      // Two independent gates, not one combined condition. A destination that
+      // has not moved is never worth re-sending, however long ago the last one
+      // went — and joining these with && is what made the fox restart its clips
+      // on every bounce, because the prediction is stable but the throttle
+      // expires between bounces.
+      if (Math.abs(target - lastTarget) < RETARGET_EPSILON) return;
+      if (now - lastSent < RETARGET_THROTTLE) return;
+
+      lastTarget = target;
+      lastSent = now;
+      instance.walkTo(target);
+    }
+
+    /**
+     * Updates the aim and acts on it after a reaction beat. A report arriving
+     * mid-beat sharpens the aim without restarting the clock: the fox has
+     * already flinched, it is not going to flinch twice.
+     */
+    function chase(target: number, delay: number) {
+      aim = target;
+      if (reactTimer) return;
+      if (delay <= 0) {
+        pursue();
+        return;
+      }
+      reactTimer = window.setTimeout(() => {
+        reactTimer = 0;
+        pursue();
+      }, delay);
+    }
+
+    /**
+     * The fox aims at where the ball is going to stop, not at where it just
+     * bounced. The landing spot comes from running the ball's own integrator
+     * forward, so it is exact — which is what lets the fox cut across and be
+     * waiting, the way an animal does, instead of trailing one bounce behind.
+     */
+    onBall(({ clientX, restX, phase, speed }) => {
+      if (!instance || !ready || reducedMotion.matches) return;
+
+      switch (phase) {
+        case "grab":
+        case "carry":
+          // Somebody is holding it. Track it, but there is nothing to chase.
+          if (reactTimer) {
+            window.clearTimeout(reactTimer);
+            reactTimer = 0;
+          }
+          aim = Number.NaN;
+          watch(toScene(clientX));
+          return;
+
+        case "throw":
+          startled = false;
+          chase(toScene(restX), beat());
+          return;
+
+        case "bounce": {
+          const here = toScene(clientX);
+          // A fast ball landing right at its feet gets a flinch, not a walk.
+          if (
+            !startled &&
+            speed > STARTLE_SPEED &&
+            Math.abs(here - instance.positionX()) < STARTLE_RANGE
+          ) {
+            startled = true;
+            startleUntil = performance.now() + 700;
+            const away = here >= instance.positionX() ? -1 : 1;
+            // Recovers on arrival: flinch first, then go and look at the thing.
+            instance.walkTo(instance.positionX() + away * STARTLE_STEP, pursue);
+            return;
+          }
+          // Mid-chase this is a course correction, so no new beat. Cold — the
+          // ball's own entrance, say — it still deserves the flinch of noticing.
+          chase(toScene(restX), Number.isNaN(aim) ? beat() : 0);
+          return;
+        }
+
+        case "settled":
+          chase(toScene(clientX), Number.isNaN(aim) ? beat() : 0);
+          return;
+      }
+    });
+
+    const start = () => whenIdle(() => void boot());
+
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+
+    desktop.addEventListener("change", () => {
+      if (desktop.matches) void boot();
+    });
+  }
+</script>
+
+<style>
+  /* Fills whatever box the parent gives it, so the layout owns the sizing.
+     The wrapper must be positioned and have a resolvable height. */
+  .dithered-fox {
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 900ms var(--ease-signal);
+  }
+
+  .dithered-fox[data-state="ready"] {
+    opacity: 1;
+  }
+
+  .dithered-fox__canvas {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+  }
+</style>
