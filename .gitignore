@@ -43,3 +43,8 @@ skills-lock.json
 # development artefacts
 scraps/
 github.md
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/

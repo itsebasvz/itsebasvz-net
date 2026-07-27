@@ -35,3 +35,12 @@ jobs:
 
       - name: Build static site
         run: npm run build
+
+      # Chromium only. The suite asserts routing, metadata, accessibility and
+      # progressive enhancement — none of which is engine-specific — so paying
+      # for three browser downloads on every run would buy nothing.
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser and accessibility tests
+        run: npm run test:e2e
