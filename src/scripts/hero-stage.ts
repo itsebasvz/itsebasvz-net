@@ -30,22 +30,32 @@ export const FOX_GROUND_INSET = 0.224;
 
 /**
  * `grab` and `carry` mean a hand has it — nothing to chase. `throw` is the
- * release, `bounce` every floor impact, `settled` the moment it stops.
+ * release, `track` a periodic look while it is in the air, `bounce` every floor
+ * impact, `settled` the moment it stops.
  */
-export type BallPhase = "grab" | "carry" | "throw" | "bounce" | "settled";
+export type BallPhase = "grab" | "carry" | "throw" | "track" | "bounce" | "settled";
 
+/**
+ * What the ball is doing, as an observer would see it — never where it is going
+ * to end up. The ball can run its own integrator forward and answer that
+ * exactly, and for a while it did; handing the answer to the fox made the fox
+ * omniscient, and an animal that is already standing on the landing spot three
+ * bounces early does not read as an animal. Predicting is the fox's job now,
+ * and getting it wrong is the point.
+ */
 export interface BallSignal {
-  /** Viewport x of the ball's centre right now, in CSS pixels. */
-  clientX: number;
   /**
-   * Viewport x where the ball is predicted to come to rest, from running the
-   * physics forward. Equals `clientX` while it is held. This is what the fox
-   * should aim at: chasing `clientX` means always arriving where the ball was.
+   * Viewport x of the ball's centre, in CSS pixels. The only quantity here that
+   * needs converting: the two canvases share a scale but not an origin, so
+   * lengths and speeds cross between them unchanged and positions do not.
    */
-  restX: number;
+  clientX: number;
+  /** Height of the ball's centre above its resting level, in scene units. */
+  height: number;
+  /** Velocity in scene units per second. y is positive upward. */
+  vx: number;
+  vy: number;
   phase: BallPhase;
-  /** Ball speed in scene units per second. */
-  speed: number;
 }
 
 type BallListener = (signal: BallSignal) => void;
@@ -61,6 +71,27 @@ export function emitBall(signal: BallSignal) {
 export function onBall(listener: BallListener) {
   ballListeners.add(listener);
   return () => ballListeners.delete(listener);
+}
+
+/** The side walls of the arena, in viewport CSS pixels. */
+export interface ArenaSpan {
+  left: number;
+  right: number;
+}
+
+let arena: ArenaSpan | null = null;
+
+/** The ball measures the walls off the layout; it publishes them here. */
+export function setArena(span: ArenaSpan) {
+  arena = span;
+}
+
+/**
+ * The fox reads them to keep a guess inside the room. It is allowed to know
+ * this much: it has watched the ball come off those walls all along.
+ */
+export function getArena() {
+  return arena;
 }
 
 let foxReady = false;

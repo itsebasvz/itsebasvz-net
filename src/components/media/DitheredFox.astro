@@ -1,7 +1,8 @@
 ---
 /**
- * The hero's fox. It owns nothing but its canvas: where it walks is decided by
- * the ball, which reports every floor impact through the shared stage module.
+ * The hero's fox. It owns its canvas and its own judgement: the ball reports
+ * what it is doing through the shared stage module, and everything about where
+ * the fox goes is decided here, out of guesses that are usually a little wrong.
  *
  * The fox is decorative — the ball's button is the interactive part of the
  * scene, and it lives in its own component.
@@ -17,6 +18,7 @@
   import {
     CAMERA_DISTANCE,
     FOX_FRAME_HEIGHT,
+    getArena,
     markFoxReady,
     onBall
   } from "../../scripts/hero-stage";
@@ -53,8 +55,18 @@
     const REACH = 2.375;
     /** Below this change in destination a new report is not worth acting on. */
     const RETARGET_EPSILON = 0.5;
-    /** And not more often than this, in ms. */
-    const RETARGET_THROTTLE = 250;
+    /**
+     * And not more often than this, in ms, jittered. A fixed interval turns
+     * a chase into a sequence of evenly spaced corrections, which is legible as
+     * a machine even when every individual move is right.
+     */
+    const DECIDE_MIN = 170;
+    const DECIDE_SPREAD = 220;
+    /**
+     * Reversing costs a pivot — 0.4 s of standing still facing the wrong way —
+     * so a guess that lands just behind the fox is not worth turning for.
+     */
+    const TURN_COMMIT = 0.9;
     /**
      * The beat between the ball leaving the hand and the fox setting off,
      * jittered. Reacting on the same frame as the throw is the single thing
@@ -80,6 +92,48 @@
     const STARTLE_SPEED = 11;
     /** How far it retreats when startled. */
     const STARTLE_STEP = 0.7;
+    /** And how long reports are kept from cancelling the flinch, in ms. */
+    const STARTLE_HOLD = 700;
+
+    /* ----------------------------------------------------------------- *
+     * The fox's model of a ball.
+     *
+     * Close to the world's physics, deliberately not the same code. The ball
+     * can integrate itself forward and say exactly where a throw will stop —
+     * that answer used to be handed over, and the fox would walk straight to
+     * the resting spot and wait there while the ball was still three bounces
+     * from arriving. Correct, and completely dead.
+     *
+     * So the fox guesses instead, one hop ahead, from what it can see: an arc
+     * down to the ground, or a roll that runs out. The guess is wrong in the
+     * ways a guess is wrong — worse the further ahead it reaches — and it gets
+     * better every time the ball bounces, because the hops keep getting
+     * shorter. Which is how the fox ends up next to the ball without ever
+     * having known where the ball was going.
+     * ----------------------------------------------------------------- */
+
+    /**
+     * The fox's idea of gravity, in scene units per second squared. The world
+     * runs at 32. Reading it slow makes it hold long arcs open a little too
+     * long, so it commits past the landing spot and has to come back.
+     */
+    const GRAVITY_GUESS = 29;
+    /**
+     * And of a roll. Ground speed decays exponentially, so a ball runs out
+     * after v/k; the world uses 1.5 for k, and the fox slightly over-brakes,
+     * which leaves it trailing a fast roll rather than cutting it off.
+     */
+    const ROLL_GUESS = 1.9;
+    /** Under this height, in scene units, the fox reads a ball as rolling. */
+    const ROLL_HEIGHT = 0.15;
+    /** Misjudgement, as a fraction of the distance the guess reaches ahead. */
+    const SIGHT_ERROR = 0.32;
+    /** Plus a floor that never goes away. It never reads the spot exactly. */
+    const SIGHT_FLOOR = 0.28;
+    /** How far a mid-air glance moves the standing belief. */
+    const BELIEF_GAIN = 0.3;
+    /** A bounce moves it much further: the ball's direction is genuinely new. */
+    const BOUNCE_GAIN = 0.7;
 
     /**
      * Scene units per CSS pixel. Duplicated from the instance because the home
@@ -113,7 +167,6 @@
     /** The walk-in is a real move; retargeting it would abandon the entrance. */
     let ready = false;
     let lastTarget = Number.NaN;
-    let lastSent = 0;
 
     const whenIdle = (run: () => void) => {
       if (typeof window.requestIdleCallback === "function") {
@@ -228,8 +281,14 @@
       return instance!.toScene({ x: clientX - box.left, y: box.height / 2 }).x;
     }
 
-    /** Where the fox thinks the ball will end up. Refined on every report. */
+    /** Where the fox believes the ball is going to end up. Never told, only guessed. */
     let aim = Number.NaN;
+    /** And where it last actually saw it, which is what it looks at. */
+    let seenX = Number.NaN;
+    /** Which way it last committed to going. Reversing is expensive. */
+    let heading = 1;
+    /** Earliest it will change its mind again, in ms. */
+    let decideAt = 0;
     let reactTimer = 0;
     /** One startle per throw, or a ball rattling nearby turns into a panic. */
     let startled = false;
@@ -237,91 +296,144 @@
     let startleUntil = 0;
 
     const beat = () => REACTION_MIN + Math.random() * REACTION_SPREAD;
+    /** Triangular, over [-1, 1]. Two uniforms is enough of a bell for a guess. */
+    const jitter = () => Math.random() + Math.random() - 1;
+
+    /** Keeps a guess inside the room the fox has watched the ball bounce around. */
+    function inArena(x: number) {
+      const span = getArena();
+      if (!span) return x;
+      return Math.min(Math.max(x, toScene(span.left)), toScene(span.right));
+    }
+
+    /**
+     * One look at the ball, turned into a guess at where it is going to stop —
+     * one hop ahead, never to rest. Air drag is not in here: the fox is not
+     * integrating anything, and reading a ball as carrying further than it
+     * really does is the right kind of wrong.
+     */
+    function judge(clientX: number, height: number, vx: number, vy: number) {
+      const x = toScene(clientX);
+      seenX = x;
+
+      const rolling = height <= ROLL_HEIGHT && vy <= 0;
+      const spot = rolling
+        ? x + vx / ROLL_GUESS
+        : x +
+          vx *
+            ((vy + Math.sqrt(Math.max(vy * vy + 2 * GRAVITY_GUESS * height, 0))) / GRAVITY_GUESS);
+
+      const ahead = Math.abs(spot - x);
+      return inArena(spot + jitter() * (SIGHT_ERROR * ahead + SIGHT_FLOOR));
+    }
 
     /** Turns to look at something without walking to it. */
     function watch(ballX: number) {
       const gap = ballX - instance!.positionX();
       if (Math.abs(gap) < FACE_DEADBAND) return;
-      instance!.face(Math.sign(gap));
+      heading = gap >= 0 ? 1 : -1;
+      instance!.face(heading);
     }
 
-    /** Commits to the current aim: walks if it needs to, otherwise just looks. */
-    function pursue() {
+    /** Commits to the current belief: walks if it needs to, otherwise just looks. */
+    function pursue(force = false) {
       if (!instance || Number.isNaN(aim)) return;
-      // Mid-flinch. The aim is still being kept up to date; acting on it here
+      // Mid-flinch. The belief is still being kept up to date; acting on it here
       // would cancel the recoil the moment the ball bounced again.
       if (performance.now() < startleUntil) return;
-      const gap = aim - instance.positionX();
+      const here = instance.positionX();
+      const gap = aim - here;
 
       // Already within nose range. Backing up to hold an exact distance would
       // look like the fox is afraid of the ball — but it should still turn and
       // face what just went past it.
       if (Math.abs(gap) <= REACH) {
-        watch(aim);
+        watch(Number.isNaN(seenX) ? aim : seenX);
         return;
       }
 
       const target = aim - Math.sign(gap) * REACH;
+      const travel = target - here;
       const now = performance.now();
-      // Two independent gates, not one combined condition. A destination that
-      // has not moved is never worth re-sending, however long ago the last one
-      // went — and joining these with && is what made the fox restart its clips
-      // on every bounce, because the prediction is stable but the throttle
-      // expires between bounces.
-      if (Math.abs(target - lastTarget) < RETARGET_EPSILON) return;
-      if (now - lastSent < RETARGET_THROTTLE) return;
+
+      if (!force) {
+        // Three independent gates, not one combined condition. A destination
+        // that has not moved is never worth re-sending, however long ago the
+        // last one went — joining these with && is what made the fox restart
+        // its clips on every bounce.
+        if (Math.abs(target - lastTarget) < RETARGET_EPSILON) return;
+        if (now < decideAt) return;
+        // Turning round for half a step reads as a twitch, not a decision.
+        if (Math.sign(travel) !== heading && Math.abs(travel) < TURN_COMMIT) return;
+      }
 
       lastTarget = target;
-      lastSent = now;
+      heading = travel >= 0 ? 1 : -1;
+      decideAt = now + DECIDE_MIN + Math.random() * DECIDE_SPREAD;
       instance.walkTo(target);
     }
 
-    /**
-     * Updates the aim and acts on it after a reaction beat. A report arriving
-     * mid-beat sharpens the aim without restarting the clock: the fox has
-     * already flinched, it is not going to flinch twice.
-     */
-    function chase(target: number, delay: number) {
-      aim = target;
-      if (reactTimer) return;
-      if (delay <= 0) {
-        pursue();
-        return;
-      }
-      reactTimer = window.setTimeout(() => {
-        reactTimer = 0;
-        pursue();
-      }, delay);
+    function cancelReaction() {
+      if (!reactTimer) return;
+      window.clearTimeout(reactTimer);
+      reactTimer = 0;
     }
 
     /**
-     * The fox aims at where the ball is going to stop, not at where it just
-     * bounced. The landing spot comes from running the ball's own integrator
-     * forward, so it is exact — which is what lets the fox cut across and be
-     * waiting, the way an animal does, instead of trailing one bounce behind.
+     * Folds a look into the belief and acts on it.
+     *
+     * The first look of a rally costs a reaction beat and is taken at face
+     * value — there is nothing to fold it into yet. Every look after that is a
+     * correction to a decision already made, so it moves the belief part of the
+     * way and does not re-arm the timer: a fox that flinched at every glance
+     * would spend the whole throw a beat behind the ball.
      */
-    onBall(({ clientX, restX, phase, speed }) => {
+    function notice(clientX: number, height: number, vx: number, vy: number, gain: number) {
+      const cold = Number.isNaN(aim);
+      const guess = judge(clientX, height, vx, vy);
+      aim = cold ? guess : aim + (guess - aim) * gain;
+      if (cold) {
+        if (!reactTimer) {
+          reactTimer = window.setTimeout(() => {
+            reactTimer = 0;
+            pursue();
+          }, beat());
+        }
+        return;
+      }
+      if (!reactTimer) pursue();
+    }
+
+    onBall(({ clientX, height, vx, vy, phase }) => {
       if (!instance || !ready || reducedMotion.matches) return;
 
       switch (phase) {
         case "grab":
         case "carry":
-          // Somebody is holding it. Track it, but there is nothing to chase.
-          if (reactTimer) {
-            window.clearTimeout(reactTimer);
-            reactTimer = 0;
-          }
+          // Somebody is holding it. Track it, but there is nothing to chase,
+          // and whatever the fox believed about the last throw is now stale.
+          cancelReaction();
           aim = Number.NaN;
-          watch(toScene(clientX));
+          lastTarget = Number.NaN;
+          seenX = toScene(clientX);
+          watch(seenX);
           return;
 
         case "throw":
           startled = false;
-          chase(toScene(restX), beat());
+          // One clear look at the ball leaving the hand. The fox sets off on
+          // that alone, which is why the first leg of a hard throw is usually
+          // in roughly the right direction and nowhere near the right place.
+          notice(clientX, height, vx, vy, 1);
+          return;
+
+        case "track":
+          notice(clientX, height, vx, vy, BELIEF_GAIN);
           return;
 
         case "bounce": {
           const here = toScene(clientX);
+          const speed = Math.hypot(vx, vy);
           // A fast ball landing right at its feet gets a flinch, not a walk.
           if (
             !startled &&
@@ -329,20 +441,29 @@
             Math.abs(here - instance.positionX()) < STARTLE_RANGE
           ) {
             startled = true;
-            startleUntil = performance.now() + 700;
+            startleUntil = performance.now() + STARTLE_HOLD;
             const away = here >= instance.positionX() ? -1 : 1;
+            heading = away;
             // Recovers on arrival: flinch first, then go and look at the thing.
-            instance.walkTo(instance.positionX() + away * STARTLE_STEP, pursue);
+            // The hold is released here rather than waited out, so the fox does
+            // not stand frozen for the rest of it once the recoil has landed.
+            instance.walkTo(instance.positionX() + away * STARTLE_STEP, () => {
+              startleUntil = 0;
+              pursue(true);
+            });
             return;
           }
-          // Mid-chase this is a course correction, so no new beat. Cold — the
-          // ball's own entrance, say — it still deserves the flinch of noticing.
-          chase(toScene(restX), Number.isNaN(aim) ? beat() : 0);
+          notice(clientX, height, vx, vy, BOUNCE_GAIN);
           return;
         }
 
         case "settled":
-          chase(toScene(clientX), Number.isNaN(aim) ? beat() : 0);
+          // Stopped, in plain sight, at a spot the fox can finally just read.
+          // Forced past the gates: this is the walk that has to land, and a
+          // stale destination half a unit short would strand it there.
+          aim = toScene(clientX);
+          seenX = aim;
+          pursue(true);
           return;
       }
     });

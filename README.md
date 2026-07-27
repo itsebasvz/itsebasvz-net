@@ -56,11 +56,15 @@ walls are measured from the layout itself — the scene counter above, the
 vertical rail to one side, the photograph to the other, and the ground the fox
 stands on.
 
-The fox does not chase the ball. It runs the ball's own integrator forward to
-find where it will come to rest, and goes there — so it intercepts instead of
-trailing one bounce behind. It reacts after a beat rather than on the same
-frame, walks or runs depending on the distance, turns to watch a ball being
-carried, and flinches when one lands at its feet.
+The fox is never told where the ball is going. It gets what an observer gets —
+where the ball is, how high, how fast — and guesses the rest from its own rough
+model of what a ball does: an arc down to the ground, or a roll that runs out.
+The guess is worse the further ahead it reaches, and it improves on every
+bounce, because the hops keep getting shorter. So the fox commits early and
+wrong, corrects as it goes, and arrives beside a ball whose landing spot it
+never actually knew. It reacts after a beat rather than on the same frame, walks
+or runs depending on the distance, turns to watch a ball being carried, and
+flinches when one lands at its feet.
 
 None of it is required to read the page. Under `prefers-reduced-motion` the
 hero is still, and without JavaScript everything but the canvas renders.

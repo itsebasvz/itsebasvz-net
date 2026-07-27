@@ -7,10 +7,10 @@
  * throw at 30 fps would cover most of the arena in one step and pass straight
  * through a wall.
  *
- * The state is a plain object and the integrator is a free function over it, so
- * the same code that moves the ball can be run forward over a copy to answer
- * "where does this end up?". That is what lets the fox intercept rather than
- * chase.
+ * It reports position and velocity and nothing else. This module used to be
+ * able to run itself forward over a copy of its own state and say exactly where
+ * a throw would come to rest — correct, cheap, and the reason the fox looked
+ * like a machine. The fox keeps its own rough model of what a ball does now.
  */
 
 /** Walls, already inset by the ball's radius. */
@@ -56,6 +56,9 @@ export interface BallStep {
 export interface BallPhysics {
   readonly x: number;
   readonly y: number;
+  /** Velocity in scene units per second. y is positive upward. */
+  readonly vx: number;
+  readonly vy: number;
   /** Accumulated roll angle, in radians. */
   readonly angle: number;
   readonly held: boolean;
@@ -73,12 +76,6 @@ export interface BallPhysics {
   /** Adds velocity to a free ball. */
   kick: (vx: number, vy: number) => void;
   advance: (delta: number, bounds: BallBounds) => BallStep;
-  /**
-   * Runs the real integrator forward over a copy of the state until the ball
-   * stops, and reports where that is. Exact rather than estimated, because it
-   * is the same code that will actually move the ball.
-   */
-  predictRest: (bounds: BallBounds) => { x: number; y: number };
 }
 
 interface BallState {
@@ -97,8 +94,6 @@ type Settings = Required<Omit<BallPhysicsOptions, "radius">> & { radius: number 
 const STEP = 1 / 120;
 /** Substeps per frame. Past this the backlog is dropped rather than chased. */
 const MAX_SUBSTEPS = 8;
-/** Ceiling on a look-ahead, in substeps. 15 s — far longer than any throw. */
-const MAX_PREDICT = 1800;
 
 const DEFAULTS = {
   gravity: 32,
@@ -201,9 +196,6 @@ export function createBallPhysics(options: BallPhysicsOptions): BallPhysics {
     restTimer: 0
   };
 
-  const probe: BallState = { ...live };
-  const discard: BallStep = { landed: false, bounced: false, settled: false };
-
   let held = false;
   let carry = 0;
 
@@ -217,6 +209,12 @@ export function createBallPhysics(options: BallPhysicsOptions): BallPhysics {
     },
     get y() {
       return live.y;
+    },
+    get vx() {
+      return live.vx;
+    },
+    get vy() {
+      return live.vy;
     },
     get angle() {
       return live.angle;
@@ -286,21 +284,6 @@ export function createBallPhysics(options: BallPhysicsOptions): BallPhysics {
       // fast-forward the throw; dropping it just resumes from where it stopped.
       if (carry >= STEP) carry = 0;
       return step;
-    },
-    predictRest(bounds: BallBounds) {
-      // A held ball has no trajectory to look ahead over.
-      if (held || live.resting) return { x: live.x, y: live.y };
-
-      Object.assign(probe, live);
-      let taken = 0;
-      while (!probe.resting && taken < MAX_PREDICT) {
-        taken += 1;
-        discard.landed = false;
-        discard.bounced = false;
-        discard.settled = false;
-        substep(probe, bounds, config, discard);
-      }
-      return { x: probe.x, y: probe.y };
     }
   };
 }

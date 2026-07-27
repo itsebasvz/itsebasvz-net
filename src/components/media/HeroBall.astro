@@ -41,6 +41,7 @@ const copy = getDictionary(locale).home.hero.ball;
     FOX_FRAME_HEIGHT,
     FOX_GROUND_INSET,
     emitBall,
+    setArena,
     whenFoxReady
   } from "../../scripts/hero-stage";
 
@@ -81,6 +82,13 @@ const copy = getDictionary(locale).home.hero.ball;
     const MIN_HANDLE = 44;
     /** How often a dragged ball reports its position, in ms. */
     const CARRY_THROTTLE = 80;
+    /**
+     * And how often a flying one does. This is the fox's eyesight: it is the
+     * only thing keeping the fox's guess up to date mid-flight, so it has to be
+     * fast enough to correct a bad first read and slow enough that the fox is
+     * clearly reacting to the ball rather than being driven by it.
+     */
+    const TRACK_THROTTLE = 90;
     /** Fallback in case the fox never reports in — the ball still arrives. */
     const DROP_FALLBACK = 5000;
 
@@ -91,6 +99,7 @@ const copy = getDictionary(locale).home.hero.ball;
     let booting = false;
     let dropped = false;
     let idleAngle = 0;
+    let trackedAt = 0;
     let bounds: BallBounds = { minX: -1, maxX: 1, minY: -1, maxY: 1 };
 
     const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -150,27 +159,31 @@ const copy = getDictionary(locale).home.hero.ball;
         );
       }
 
+      // The fox uses these to keep its guesses inside the room.
+      setArena({ left: box.left + leftPx, right: box.left + rightPx });
+
       const size = Math.max(BALL_DIAMETER / unitsPerPixel(), MIN_HANDLE);
       handle!.style.setProperty("--handle-size", `${Math.round(size)}px`);
       if (debug) drawDebug(leftPx, rightPx, topPx, floorPx);
     }
 
     /**
-     * Tells the stage where the ball is and — more usefully — where it is going
-     * to end up. The look-ahead is the real physics run forward, so the fox can
-     * set off for the landing spot on the throw instead of trailing each bounce.
+     * Tells the stage what the ball is doing. Position, height off the floor and
+     * velocity — what anything watching would have to work with. Where it ends
+     * up is not in here, on purpose: that is the fox's guess to make.
      */
     function report(phase: BallPhase) {
       if (!instance || !physics) return;
       const box = canvas!.getBoundingClientRect();
       const here = instance.toCanvas({ x: physics.x, y: physics.y });
-      const rest = physics.predictRest(bounds);
-      const there = instance.toCanvas({ x: rest.x, y: rest.y });
       emitBall({
         clientX: box.left + here.x,
-        restX: box.left + there.x,
-        phase,
-        speed: physics.speed
+        // Both walls are already inset by the radius, so this is zero exactly
+        // when the ball is sitting on the ground.
+        height: physics.y - bounds.minY,
+        vx: physics.vx,
+        vy: physics.vy,
+        phase
       });
     }
 
@@ -256,6 +269,16 @@ const copy = getDictionary(locale).home.hero.ball;
 
           if (step.landed) report("bounce");
           if (step.settled) report("settled");
+
+          // A bounce is a big, sharp piece of information and there are only a
+          // handful of them per throw. On their own they leave the fox blind
+          // for the whole of each arc, which reads as a decision taken once and
+          // then defended. These are the glances in between.
+          const now = performance.now();
+          if (!physics.held && !physics.resting && now - trackedAt > TRACK_THROTTLE) {
+            trackedAt = now;
+            report("track");
+          }
         },
         onLoad: () => {
           measure();
