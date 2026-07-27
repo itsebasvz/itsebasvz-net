@@ -1,0 +1,45 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# testing and coverage
+coverage/
+playwright-report/
+test-results/
+
+# Cloudflare local state
+.wrangler/
+
+# environment files
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+
+# editor and operating system files
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# agent tooling: vendored third-party skills and lock state, not project code
+.agents/
+.claude/
+skills-lock.json
+
+# source models kept outside the repository.
+# The fox ships from public/models/; this is the same file byte for byte.
+# The soccer ball is 12 MB of raw positions and is unused — the hero's ball is
+# built in code by src/scripts/tennis-ball.ts.
+/Fox.glb
+/SoccerBall.glb
+
+# development artefacts
+scraps/
+github.md
