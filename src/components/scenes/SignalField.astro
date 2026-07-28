@@ -27,6 +27,27 @@ const total = String(copy.modules.length).padStart(2, "0");
           <span class="signal-field__counter-total">/ {total}</span>
         </p>
         <h2 class="signal-field__claim" data-signal-aside>{copy.thesis}</h2>
+
+        <div class="signal-field__portrait" data-signal-aside>
+          <div class="signal-field__photo" data-signal-photo>
+            <MediaPlate
+              src={media["signal-wall-08-crop"]}
+              alt={copy.secondPhoto.alt}
+              caption={copy.secondPhoto.caption}
+              sizes="(min-width: 1100px) 520px, (min-width: 720px) 42vw, calc(100vw - 40px)"
+              widths={[320, 480, 640, 880, 936]}
+            />
+          </div>
+          <div class="signal-field__photo" data-signal-photo>
+            <MediaPlate
+              src={media["signal-texture-14-crop"]}
+              alt={copy.firstPhoto.alt}
+              caption={copy.firstPhoto.caption}
+              sizes="(min-width: 1100px) 520px, (min-width: 720px) 42vw, calc(100vw - 40px)"
+              widths={[320, 480, 640, 880, 1037]}
+            />
+          </div>
+        </div>
       </div>
 
       <ol class="signal-field__steps">
@@ -42,27 +63,6 @@ const total = String(copy.modules.length).padStart(2, "0");
         }
       </ol>
     </div>
-
-    <div class="signal-field__evidence">
-      <div class="signal-field__photo" data-signal-plate>
-        <MediaPlate
-          src={media["signal-texture-14-crop"]}
-          alt={copy.firstPhoto.alt}
-          caption={copy.firstPhoto.caption}
-          sizes="(min-width: 1100px) 480px, (min-width: 720px) 42vw, calc(100vw - 40px)"
-          widths={[320, 480, 640, 880, 1037]}
-        />
-      </div>
-      <div class="signal-field__photo" data-signal-plate>
-        <MediaPlate
-          src={media["signal-wall-08-crop"]}
-          alt={copy.secondPhoto.alt}
-          caption={copy.secondPhoto.caption}
-          sizes="(min-width: 1100px) 480px, (min-width: 720px) 42vw, calc(100vw - 40px)"
-          widths={[320, 480, 640, 880, 936]}
-        />
-      </div>
-    </div>
   </div>
 </section>
 
@@ -70,16 +70,15 @@ const total = String(copy.modules.length).padStart(2, "0");
   import type { SignalFieldTargets } from "../../scripts/motion/signal-field";
 
   const sequence = document.querySelector<HTMLElement>("[data-signal-sequence]");
-  const scene = sequence?.closest<HTMLElement>("[data-scene='02']");
   const digit = sequence?.querySelector<HTMLElement>("[data-signal-digit]");
 
-  if (sequence && scene && digit) {
+  if (sequence && digit) {
     const targets: SignalFieldTargets = {
       sequence,
       digit,
       aside: [...sequence.querySelectorAll<HTMLElement>("[data-signal-aside]")],
       steps: [...sequence.querySelectorAll<HTMLElement>("[data-signal-step]")],
-      plates: [...scene.querySelectorAll<HTMLElement>("[data-signal-plate]")]
+      photos: [...sequence.querySelectorAll<HTMLElement>("[data-signal-photo]")]
     };
 
     // GSAP is the heaviest thing on the page after the fox, and this scene sits
@@ -108,6 +107,9 @@ const total = String(copy.modules.length).padStart(2, "0");
   /* The aside is a grid item, so its sticky range is the full height of the
      steps column beside it. */
   .signal-field__sequence {
+    /* Between the claim and the plate, and between the plate and its caption's
+       breathing room. One value so the column reads as evenly set. */
+    --aside-gap: clamp(20px, 3vh, 36px);
     /* One slab of scroll per step. The aside borrows the same measure, which is
        what keeps the two columns on a shared centre line. */
     --step-block: 42svh;
@@ -118,28 +120,29 @@ const total = String(copy.modules.length).padStart(2, "0");
   }
 
   /*
-   * Sized like a step and stuck at the offset that centres a step, so the
-   * counter and the active title share a baseline from the first frame.
+   * Anchored to the top of the frame, under the sticky site header, and holding
+   * the plate that shares the column with it.
    *
-   * A viewport-tall box was the obvious version and it is wrong: its content
-   * centres half a viewport below the start of the sequence, while step one
-   * centres a fifth of one below it. The gap is the difference, and it does not
-   * close until the aside finally sticks — long after step one has gone past.
-   * Matching the measures makes the unstuck and stuck positions the same point,
-   * so the handover is invisible.
+   * The counter used to be stuck at the offset that centres a step, so it and
+   * the active title shared a baseline. Sharing the column with a photograph
+   * costs that alignment: the type has to start at the top or there is nowhere
+   * for the plate to go. The counter still ticks with the steps, it just no
+   * longer lines up with one.
    */
   .signal-field__aside {
     position: sticky;
-    top: calc(50svh - var(--step-block) / 2);
+    top: calc(var(--header-height) + clamp(20px, 4vh, 48px));
     display: flex;
     /* Without this the grid stretches the aside over the whole row, and a
        sticky box as tall as its containing block has no travel left to stick
        with — it just scrolls. */
     align-self: start;
-    min-height: var(--step-block);
+    /* Bounded so the whole column always fits one screen. A sticky box taller
+       than the viewport pins its top edge and hides its own bottom, which would
+       put the plate's caption out of sight for the entire scene. */
+    max-block-size: calc(100svh - var(--header-height) - clamp(52px, 10vh, 116px));
     flex-direction: column;
-    justify-content: center;
-    gap: clamp(20px, 3vh, 36px);
+    gap: var(--aside-gap);
   }
 
   .signal-field__counter {
@@ -177,6 +180,67 @@ const total = String(copy.modules.length).padStart(2, "0");
     font-size: var(--font-size-headline-lg);
     letter-spacing: var(--tracking-headline);
     line-height: var(--line-headline);
+  }
+
+  /* Takes whatever the counter and the claim leave over. */
+  .signal-field__portrait {
+    display: grid;
+    /* A flex item never shrinks below its content size without this, and the
+       content here is a photograph taller than the box. */
+    min-block-size: 0;
+    flex: 1;
+  }
+
+  /* Both plates share one cell, so the handover is a dissolve in place rather
+     than a change of layout. The first paints over the second, and fading it
+     out is what reveals the one underneath — the second never leaves full
+     opacity, because two plates crossing at 50% would let a quarter of the
+     background through and read as a dip to black. */
+  .signal-field__photo {
+    min-block-size: 0;
+    grid-area: 1 / 1;
+  }
+
+  .signal-field__photo:first-child {
+    z-index: 1;
+  }
+
+  /* The photographs can share a cell because each one is opaque and hides the
+     other. Their captions cannot: type sits on nothing, so both would print in
+     the same place. The second label waits for the handover to bring it in —
+     and with no JavaScript at all that leaves exactly one photograph and the
+     one label that belongs to it, which is the honest static reading of the
+     column rather than a blank. */
+  .signal-field__photo:not(:first-child) :global(.media-plate__caption) {
+    opacity: 0;
+  }
+
+  /* The plate is 3:4 and at full column width it is taller than most screens,
+     so here it is driven by its height and the width follows the ratio. Both
+     photographs are exactly 3:4, so they draw at the same size and the swap
+     does not move a pixel. */
+  /* The height has to be definite at every link of the chain or the percentage
+     below has nothing to resolve against and the image falls back to its
+     intrinsic size — which is how the caption ends up outside the column. */
+  .signal-field__photo :global(.media-plate) {
+    min-block-size: 0;
+    block-size: 100%;
+  }
+
+  .signal-field__photo :global(picture) {
+    display: flex;
+    min-block-size: 0;
+    flex: 1;
+  }
+
+  .signal-field__photo :global(.media-plate__image) {
+    /* contain is the guard: in a column wide enough for max-inline-size to bite,
+       the height would otherwise be scaled away and the photograph stretched. */
+    max-inline-size: 100%;
+    block-size: 100%;
+    inline-size: auto;
+    object-fit: contain;
+    object-position: left top;
   }
 
   .signal-field__steps {
@@ -229,44 +293,56 @@ const total = String(copy.modules.length).padStart(2, "0");
     line-height: var(--line-body);
   }
 
-  /* Two plates on a three-column measure: the empty third column is the air
-     the scene needs after two viewports of type. */
-  .signal-field__evidence {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
-    gap: clamp(24px, 3.4vw, 56px);
-    margin-top: clamp(80px, 12vh, 152px);
+  /*
+   * The two configurations where the column stops being a travelling companion:
+   * narrow enough that it becomes a header, or motion turned off, where there is
+   * no scroll to hand one plate over to the other. Either way the aside gives up
+   * its stickiness and its height ceiling, and the plates unstack into two
+   * pictures in reading order — 08 then 14, the order they carry in the markup.
+   */
+  @media (max-width: 900px), (prefers-reduced-motion: reduce) {
+    .signal-field__aside {
+      position: static;
+      max-block-size: none;
+    }
+
+    .signal-field__portrait {
+      display: flex;
+      flex-direction: column;
+      flex: none;
+      gap: var(--aside-gap);
+    }
+
+    .signal-field__photo :global(.media-plate) {
+      block-size: auto;
+    }
+
+    /* Unstacked, each label is under its own photograph again. */
+    .signal-field__photo:not(:first-child) :global(.media-plate__caption) {
+      opacity: 1;
+    }
+
+    .signal-field__photo :global(picture) {
+      display: block;
+      flex: none;
+    }
+
+    .signal-field__photo :global(.media-plate__image) {
+      block-size: auto;
+      inline-size: 100%;
+    }
   }
 
   @media (max-width: 900px) {
     .signal-field__sequence {
+      --step-block: 34svh;
+
       grid-template-columns: 1fr;
       gap: clamp(24px, 5vw, 48px);
-    }
-
-    /* Below the two-column layout the aside stops being a companion and becomes
-       a header, so it gives up both stickiness and its reserved measure. */
-    .signal-field__aside {
-      position: static;
-      min-height: 0;
-    }
-
-    .signal-field__sequence {
-      --step-block: 34svh;
-    }
-
-    .signal-field__evidence {
-      grid-template-columns: 1fr;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .signal-field__aside {
-      position: static;
-      min-height: 0;
-    }
-
     /* Without dimming there is no reason to spend two viewports on five items;
        the list collapses to ordinary reading length. */
     .signal-step {
