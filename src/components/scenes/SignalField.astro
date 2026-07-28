@@ -110,6 +110,12 @@ const total = String(copy.modules.length).padStart(2, "0");
     /* Between the claim and the plate, and between the plate and its caption's
        breathing room. One value so the column reads as evenly set. */
     --aside-gap: clamp(20px, 3vh, 36px);
+    /* Named because the lead and tail below are derived from them, and a value
+       that only agreed with the sticky column by coincidence would drift. */
+    --aside-inset: clamp(20px, 4vh, 48px);
+    --aside-room: clamp(52px, 10vh, 116px);
+    --aside-top: calc(var(--header-height) + var(--aside-inset));
+    --aside-height: calc(100svh - var(--header-height) - var(--aside-room));
     /* One slab of scroll per step. The aside borrows the same measure, which is
        what keeps the two columns on a shared centre line. */
     --step-block: 42svh;
@@ -131,7 +137,7 @@ const total = String(copy.modules.length).padStart(2, "0");
    */
   .signal-field__aside {
     position: sticky;
-    top: calc(var(--header-height) + clamp(20px, 4vh, 48px));
+    top: var(--aside-top);
     display: flex;
     /* Without this the grid stretches the aside over the whole row, and a
        sticky box as tall as its containing block has no travel left to stick
@@ -140,7 +146,7 @@ const total = String(copy.modules.length).padStart(2, "0");
     /* Bounded so the whole column always fits one screen. A sticky box taller
        than the viewport pins its top edge and hides its own bottom, which would
        put the plate's caption out of sight for the entire scene. */
-    max-block-size: calc(100svh - var(--header-height) - clamp(52px, 10vh, 116px));
+    max-block-size: var(--aside-height);
     flex-direction: column;
     gap: var(--aside-gap);
   }
@@ -243,8 +249,29 @@ const total = String(copy.modules.length).padStart(2, "0");
     object-position: left top;
   }
 
+  /*
+   * The steps size the grid row, and the grid row is the sticky column's
+   * containing block — so this padding is what decides how long the column stays
+   * pinned. Without it the pinned range is narrower than the run of the steps:
+   * the column has not stuck yet when step one centres, so it hangs below the
+   * fold with the plate cut off, and it has already been pushed back up by the
+   * time step five centres, so the claim slides under the header.
+   *
+   * Both ends are derived rather than dialled in. Writing V for the viewport, S
+   * for a step's slab, T for the sticky offset and H for the column's height:
+   *
+   *   lead ≥ V/2 − S/2 − T          step one centres with the column stuck
+   *   tail ≥ T + H − V/2 − S/2      step five centres with it still stuck
+   *
+   * which at 1440×900 comes out as 157px and 207px. The tail has slack built in
+   * — H is the ceiling, and a shorter column only needs less — while the lead is
+   * exact, which is all it has to be: sticky engages at the threshold, not past
+   * it. `max()` guards the absurd viewport where the arithmetic goes negative.
+   */
   .signal-field__steps {
-    padding: 0;
+    padding-block: max(0px, calc(50svh - var(--step-block) / 2 - var(--aside-top)))
+      max(0px, calc(var(--aside-top) + var(--aside-height) - 50svh - var(--step-block) / 2));
+    padding-inline: 0;
     margin: 0;
     list-style: none;
   }
@@ -304,6 +331,11 @@ const total = String(copy.modules.length).padStart(2, "0");
     .signal-field__aside {
       position: static;
       max-block-size: none;
+    }
+
+    /* Nothing is pinned here, so the room that kept it pinned is dead space. */
+    .signal-field__steps {
+      padding-block: 0;
     }
 
     .signal-field__portrait {
